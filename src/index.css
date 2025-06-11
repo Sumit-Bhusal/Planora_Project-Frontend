@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles for better dark mode support */
+@layer base {
+  html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  body {
+    @apply bg-white dark:bg-dark-bg-primary text-gray-900 dark:text-dark-text-primary transition-colors duration-300;
+  }
+  
+  * {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 dark:bg-dark-interactive-primary dark:hover:bg-dark-interactive-hover text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary-600 hover:bg-secondary-700 dark:bg-dark-interactive-secondary dark:hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105;
+  }
+  
+  .card {
+    @apply bg-white dark:bg-dark-bg-secondary border border-gray-200 dark:border-dark-border-primary rounded-xl shadow-sm hover:shadow-md transition-all duration-200;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-bg-tertiary text-gray-900 dark:text-dark-text-primary placeholder-gray-500 dark:placeholder-dark-text-tertiary focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-transparent transition-all duration-200;
+  }
+  
+  /* Dark theme specific components */
+  .dark-card {
+    @apply bg-dark-bg-secondary border border-dark-border-primary;
+  }
+  
+  .dark-input {
+    @apply bg-dark-bg-tertiary border-dark-border-primary text-dark-text-primary placeholder-dark-text-tertiary;
+  }
+  
+  .dark-button {
+    @apply bg-dark-interactive-primary hover:bg-dark-interactive-hover text-white;
+  }
+  
+  .dark-button-secondary {
+    @apply bg-dark-interactive-secondary hover:bg-gray-700 text-dark-text-primary;
+  }
+  
+  .dark-text-primary {
+    @apply text-dark-text-primary;
+  }
+  
+  .dark-text-secondary {
+    @apply text-dark-text-secondary;
+  }
+  
+  .dark-text-tertiary {
+    @apply text-dark-text-tertiary;
+  }
+  
+  .dark-border {
+    @apply border-dark-border-primary;
+  }
+  
+  .dark-border-secondary {
+    @apply border-dark-border-secondary;
+  }
+}
+
+@layer utilities {
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-400 dark:to-secondary-400 bg-clip-text text-transparent;
+  }
+  
+  .bg-gradient-primary {
+    @apply bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-500 dark:to-secondary-500;
+  }
+  
+  /* Dark theme utilities */
+  .dark-bg-primary {
+    @apply bg-dark-bg-primary;
+  }
+  
+  .dark-bg-secondary {
+    @apply bg-dark-bg-secondary;
+  }
+  
+  .dark-bg-tertiary {
+    @apply bg-dark-bg-tertiary;
+  }
+  
+  .dark-bg-quaternary {
+    @apply bg-dark-bg-quaternary;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
