@@ -29,10 +29,10 @@ const CreateEvent: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  // const [showPaymentModal, setShowPaymentModal] = useState(false); // Remove this line
 
   const categories = ['Technology', 'Business', 'Arts', 'Sports', 'Music', 'Education'];
-  const eventCreationFee = 10000; // NPR 10,000
+  // const eventCreationFee = 10000; // NPR 10,000 (remove this line)
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -82,16 +82,7 @@ const CreateEvent: React.FC = () => {
       return;
     }
 
-    // Show payment modal for event creation fee
-    setShowPaymentModal(true);
-  };
-
-  const handlePaymentSuccess = async () => {
-    if (!user) {
-      setError('User is not authenticated');
-      return;
-    }
-  
+    // Directly create the event (remove payment modal logic)
     setIsLoading(true);
     try {
       const eventData = {
@@ -109,7 +100,6 @@ const CreateEvent: React.FC = () => {
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
         status: 'published' as const,
       };
-  
       createEvent(eventData);
       navigate('/dashboard');
     } catch (err) {
@@ -118,6 +108,8 @@ const CreateEvent: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  // Remove all references to showPaymentModal, handlePaymentSuccess, and payment modal UI.
 
   return (
     <>
@@ -245,7 +237,7 @@ const CreateEvent: React.FC = () => {
                 <Card className="p-6 bg-yellow-50 border-yellow-200">
                   <h3 className="text-lg font-semibold text-yellow-800 mb-2">Event Creation Fee</h3>
                   <p className="text-sm text-yellow-700 mb-3">
-                    A one-time fee of <strong>NPR {eventCreationFee.toLocaleString()}</strong> is required to publish your event on Planora.
+                    A one-time fee of <strong>NPR {/* eventCreationFee.toLocaleString() */}</strong> is required to publish your event on Planora.
                   </p>
                   <ul className="text-xs text-yellow-600 space-y-1">
                     <li>• Event promotion on our platform</li>
@@ -310,7 +302,7 @@ const CreateEvent: React.FC = () => {
                       loading={isLoading}
                       icon={Save}
                     >
-                      Pay NPR {eventCreationFee.toLocaleString()} & Create Event
+                      Pay NPR {/* eventCreationFee.toLocaleString() */} & Create Event
                     </Button>
                     
                     <Button
@@ -342,13 +334,7 @@ const CreateEvent: React.FC = () => {
       </div>
 
       {/* Payment Modal */}
-      <PaymentModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        amount={eventCreationFee}
-        purpose="event_creation"
-        onSuccess={handlePaymentSuccess}
-      />
+      {/* Remove all references to showPaymentModal, handlePaymentSuccess, and payment modal UI. */}
     </>
   );
 };
