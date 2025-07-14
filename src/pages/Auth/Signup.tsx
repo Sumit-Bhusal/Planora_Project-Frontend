@@ -1,72 +1,99 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Eye, EyeOff, Users, UserCog, Heart, Music, Briefcase, Palette, Trophy, GraduationCap, Gamepad2, Camera } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import Input from '../../components/UI/Input';
-import Button from '../../components/UI/Button';
-import Card from '../../components/UI/Card';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Mail,
+  Lock,
+  User,
+  Eye,
+  EyeOff,
+  Users,
+  UserCog,
+  Heart,
+  Music,
+  Briefcase,
+  Palette,
+  Trophy,
+  GraduationCap,
+  Gamepad2,
+  Camera,
+} from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import Input from "../../components/UI/Input";
+import Button from "../../components/UI/Button";
+import Card from "../../components/UI/Card";
+import { RegisterData } from "../../types/auth";
 
 const Signup: React.FC = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState<'user' | 'organizer'>('user');
+  const [firstname, setFirstName] = useState("");
+  const [lastname, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState<"user" | "organizer">("user");
   const [interests, setInterests] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [step, setStep] = useState(1);
 
-  const { signup, loginWithGoogle } = useAuth();
+  const { loginWithGoogle, register } = useAuth();
   const navigate = useNavigate();
 
   const availableInterests = [
-    { name: 'Technology', icon: Gamepad2 },
-    { name: 'Business', icon: Briefcase },
-    { name: 'Arts', icon: Palette },
-    { name: 'Sports', icon: Trophy },
-    { name: 'Music', icon: Music },
-    { name: 'Education', icon: GraduationCap },
-    { name: 'Health & Wellness', icon: Heart },
-    { name: 'Photography', icon: Camera },
+    { name: "Technology", icon: Gamepad2 },
+    { name: "Business", icon: Briefcase },
+    { name: "Arts", icon: Palette },
+    { name: "Sports", icon: Trophy },
+    { name: "Music", icon: Music },
+    { name: "Education", icon: GraduationCap },
+    { name: "Health & Wellness", icon: Heart },
+    { name: "Photography", icon: Camera },
   ];
 
   const handleInterestToggle = (interest: string) => {
-    setInterests(prev => 
-      prev.includes(interest) 
-        ? prev.filter(i => i !== interest)
+    setInterests((prev) =>
+      prev.includes(interest)
+        ? prev.filter((i) => i !== interest)
         : [...prev, interest]
     );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError("Password must be at least 6 characters");
       return;
     }
 
-    if (role === 'user' && interests.length === 0) {
-      setError('Please select at least one interest');
+    if (role === "user" && interests.length === 0) {
+      setError("Please select at least one interest");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      await signup(email, password, name, role, interests);
-      navigate('/dashboard');
+      const data: RegisterData = {
+        email,
+        password,
+        firstName: firstname,
+        lastName: lastname,
+        roles: ["user", "organizer"],
+        username,
+      };
+      await register(data);
+      navigate("/dashboard");
     } catch (err) {
-      setError('Failed to create account. Please try again.');
+      setError("Failed to create account. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -74,39 +101,46 @@ const Signup: React.FC = () => {
 
   const handleGoogleSignUp = async () => {
     setIsGoogleLoading(true);
-    setError('');
+    setError("");
 
     try {
       await loginWithGoogle(role);
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (err) {
-      setError('Google sign-up failed. Please try again.');
+      setError("Google sign-up failed. Please try again.");
     } finally {
       setIsGoogleLoading(false);
     }
   };
 
   const handleNext = () => {
-    if (!name || !email || !password || !confirmPassword) {
-      setError('Please fill in all fields');
+    if (!firstname || !lastname || !email || !password || !confirmPassword) {
+      setError("Please fill in all fields");
       return;
     }
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError("Password must be at least 6 characters");
       return;
     }
-    setError('');
-    
+    setError("");
+
     // If organizer, skip interest selection and create account directly
-    if (role === 'organizer') {
+    if (role === "organizer") {
       setIsLoading(true);
-      signup(email, password, name, role, interests)
-        .then(() => navigate('/dashboard'))
-        .catch(() => setError('Failed to create account. Please try again.'))
+      register({
+        email,
+        password,
+        firstName: firstname,
+        lastName: lastname,
+        roles: ["organizer"],
+        username,
+      })
+        .then(() => navigate("/dashboard"))
+        .catch(() => setError("Failed to create account. Please try again."))
         .finally(() => setIsLoading(false));
     } else {
       setStep(2);
@@ -117,8 +151,12 @@ const Signup: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-teal-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Create your account</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Join Planora and start creating amazing events</p>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Create your account
+          </h2>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            Join Planora and start creating amazing events
+          </p>
         </div>
 
         <Card className="p-8 shadow-2xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
@@ -132,29 +170,33 @@ const Signup: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
-                    onClick={() => setRole('user')}
+                    onClick={() => setRole("user")}
                     className={`p-4 rounded-lg border-2 transition-all transform hover:scale-105 ${
-                      role === 'user'
-                        ? 'border-secondary-500 bg-secondary-50 dark:bg-secondary-900/30 text-secondary-700 dark:text-secondary-300 shadow-lg'
-                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-700'
+                      role === "user"
+                        ? "border-secondary-500 bg-secondary-50 dark:bg-secondary-900/30 text-secondary-700 dark:text-secondary-300 shadow-lg"
+                        : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-700"
                     }`}
                   >
                     <Users className="h-6 w-6 mx-auto mb-2" />
                     <span className="text-sm font-medium">Attend Events</span>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Discover and join events</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Discover and join events
+                    </p>
                   </button>
                   <button
                     type="button"
-                    onClick={() => setRole('organizer')}
+                    onClick={() => setRole("organizer")}
                     className={`p-4 rounded-lg border-2 transition-all transform hover:scale-105 ${
-                      role === 'organizer'
-                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 shadow-lg'
-                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-700'
+                      role === "organizer"
+                        ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 shadow-lg"
+                        : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-700"
                     }`}
                   >
                     <UserCog className="h-6 w-6 mx-auto mb-2" />
                     <span className="text-sm font-medium">Create Events</span>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Organize and manage events</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Organize and manage events
+                    </p>
                   </button>
                 </div>
               </div>
@@ -195,19 +237,40 @@ const Signup: React.FC = () => {
                   <div className="w-full border-t border-gray-300 dark:border-gray-600" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">Or continue with email</span>
+                  <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                    Or continue with email
+                  </span>
                 </div>
               </div>
 
               <div className="space-y-6">
                 <Input
-                  label="Full name"
+                  label="First name"
                   type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={firstname}
+                  onChange={(e) => setFirstName(e.target.value)}
                   icon={User}
                   required
-                  placeholder="Enter your full name"
+                  placeholder="Enter your first name"
+                />
+                <Input
+                  label="Last name"
+                  type="text"
+                  value={lastname}
+                  onChange={(e) => setLastName(e.target.value)}
+                  icon={User}
+                  required
+                  placeholder="Enter your last name"
+                />
+
+                <Input
+                  label="Username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  icon={User}
+                  required
+                  placeholder="Enter your username"
                 />
 
                 <Input
@@ -223,7 +286,7 @@ const Signup: React.FC = () => {
                 <div className="relative">
                   <Input
                     label="Password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     icon={Lock}
@@ -235,13 +298,17 @@ const Signup: React.FC = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                   >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
                   </button>
                 </div>
 
                 <Input
                   label="Confirm password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   icon={Lock}
@@ -259,7 +326,13 @@ const Signup: React.FC = () => {
                   onClick={handleNext}
                   className="w-full"
                   loading={isLoading}
-                  disabled={!name || !email || !password || !confirmPassword}
+                  disabled={
+                    !firstname ||
+                    !lastname ||
+                    !email ||
+                    !password ||
+                    !confirmPassword
+                  }
                 >
                   Continue
                 </Button>
@@ -269,9 +342,14 @@ const Signup: React.FC = () => {
             <>
               {/* Interest Selection */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">What interests you?</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Select your interests to get personalized event recommendations</p>
-                
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  What interests you?
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Select your interests to get personalized event
+                  recommendations
+                </p>
+
                 <div className="grid grid-cols-2 gap-3">
                   {availableInterests.map(({ name, icon: Icon }) => (
                     <button
@@ -280,8 +358,8 @@ const Signup: React.FC = () => {
                       onClick={() => handleInterestToggle(name)}
                       className={`p-3 rounded-lg border-2 transition-all transform hover:scale-105 ${
                         interests.includes(name)
-                          ? 'border-secondary-500 bg-secondary-50 dark:bg-secondary-900/30 text-secondary-700 dark:text-secondary-300'
-                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-700'
+                          ? "border-secondary-500 bg-secondary-50 dark:bg-secondary-900/30 text-secondary-700 dark:text-secondary-300"
+                          : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-700"
                       }`}
                     >
                       <Icon className="h-5 w-5 mx-auto mb-1" />
@@ -306,7 +384,11 @@ const Signup: React.FC = () => {
                   Back
                 </Button>
                 <Button
-                  onClick={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
+                  onClick={() =>
+                    handleSubmit({
+                      preventDefault: () => {},
+                    } as React.FormEvent)
+                  }
                   className="flex-1"
                   loading={isLoading}
                   disabled={interests.length === 0}
@@ -319,7 +401,7 @@ const Signup: React.FC = () => {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Link
                 to="/login"
                 className="text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 font-medium"

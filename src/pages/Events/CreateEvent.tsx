@@ -1,12 +1,22 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, DollarSign, Users, Image, Tag, Save, Sparkles, AlertTriangle } from 'lucide-react';
-import { useEvents } from '../../contexts/EventContext';
-import { useAuth } from '../../contexts/AuthContext';
-import Input from '../../components/UI/Input';
-import Button from '../../components/UI/Button';
-import Card from '../../components/UI/Card';
-import PaymentModal from '../../components/Payment/PaymentModal';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Calendar,
+  MapPin,
+  DollarSign,
+  Users,
+  Image,
+  Tag,
+  Save,
+  Sparkles,
+  AlertTriangle,
+} from "lucide-react";
+import { useEvents } from "../../contexts/EventContext";
+import { useAuth } from "../../contexts/AuthContext";
+import Input from "../../components/UI/Input";
+import Button from "../../components/UI/Button";
+import Card from "../../components/UI/Card";
+import PaymentModal from "../../components/Payment/PaymentModal";
 
 const CreateEvent: React.FC = () => {
   const { createEvent } = useEvents();
@@ -14,55 +24,72 @@ const CreateEvent: React.FC = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-    date: '',
-    endDate: '',
-    location: '',
-    venue: '',
-    price: '',
-    capacity: '',
-    image: '',
-    tags: '',
+    title: "",
+    description: "",
+    category: "",
+    date: "",
+    endDate: "",
+    location: "",
+    venue: "",
+    price: "",
+    capacity: "",
+    image: "",
+    tags: "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-  const categories = ['Technology', 'Business', 'Arts', 'Sports', 'Music', 'Education'];
+  const categories = [
+    "Technology",
+    "Business",
+    "Arts",
+    "Sports",
+    "Music",
+    "Education",
+  ];
   const eventCreationFee = 10000; // NPR 10,000
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const validateForm = (): boolean => {
-    if (!formData.title || !formData.description || !formData.category || 
-        !formData.date || !formData.location || !formData.venue || 
-        !formData.price || !formData.capacity) {
-      setError('Please fill in all required fields');
+    if (
+      !formData.title ||
+      !formData.description ||
+      !formData.category ||
+      !formData.date ||
+      !formData.location ||
+      !formData.venue ||
+      !formData.price ||
+      !formData.capacity
+    ) {
+      setError("Please fill in all required fields");
       return false;
     }
 
     if (new Date(formData.date) <= new Date()) {
-      setError('Event date must be in the future');
+      setError("Event date must be in the future");
       return false;
     }
 
-    if (formData.endDate && new Date(formData.endDate) <= new Date(formData.date)) {
-      setError('End date must be after start date');
+    if (
+      formData.endDate &&
+      new Date(formData.endDate) <= new Date(formData.date)
+    ) {
+      setError("End date must be after start date");
       return false;
     }
 
     if (parseFloat(formData.price) < 0) {
-      setError('Price cannot be negative');
+      setError("Price cannot be negative");
       return false;
     }
 
     if (parseInt(formData.capacity) < 1) {
-      setError('Capacity must be at least 1');
+      setError("Capacity must be at least 1");
       return false;
     }
 
@@ -71,10 +98,10 @@ const CreateEvent: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!user) {
-      setError('You must be logged in to create an event');
+      setError("You must be logged in to create an event");
       return;
     }
 
@@ -101,15 +128,20 @@ const CreateEvent: React.FC = () => {
         venue: formData.venue,
         price: parseFloat(formData.price),
         capacity: parseInt(formData.capacity),
-        image: formData.image || 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-        status: 'published' as const,
+        image:
+          formData.image ||
+          "https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        tags: formData.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter((tag) => tag),
+        status: "published" as const,
       };
 
       createEvent(eventData);
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (err) {
-      setError('Failed to create event. Please try again.');
+      setError("Failed to create event. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -127,8 +159,12 @@ const CreateEvent: React.FC = () => {
                 <div className="absolute inset-0 bg-primary-600 dark:bg-primary-400 rounded-full opacity-20 animate-ping"></div>
               </div>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Create New Event</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">Fill in the details to create your amazing event</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              Create New Event
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Fill in the details to create your amazing event
+            </p>
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -145,7 +181,9 @@ const CreateEvent: React.FC = () => {
                     <Input
                       label="Event Title"
                       value={formData.title}
-                      onChange={(e) => handleInputChange('title', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("title", e.target.value)
+                      }
                       placeholder="Enter event title"
                       required
                     />
@@ -156,7 +194,9 @@ const CreateEvent: React.FC = () => {
                       </label>
                       <textarea
                         value={formData.description}
-                        onChange={(e) => handleInputChange('description', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("description", e.target.value)
+                        }
                         placeholder="Describe your event..."
                         rows={4}
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-400 focus:outline-none transition-colors duration-200"
@@ -170,13 +210,17 @@ const CreateEvent: React.FC = () => {
                       </label>
                       <select
                         value={formData.category}
-                        onChange={(e) => handleInputChange('category', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("category", e.target.value)
+                        }
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-400 focus:outline-none transition-colors duration-200"
                         required
                       >
                         <option value="">Select a category</option>
-                        {categories.map(category => (
-                          <option key={category} value={category}>{category}</option>
+                        {categories.map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -184,7 +228,9 @@ const CreateEvent: React.FC = () => {
                     <Input
                       label="Tags"
                       value={formData.tags}
-                      onChange={(e) => handleInputChange('tags', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("tags", e.target.value)
+                      }
                       placeholder="Enter tags separated by commas"
                       icon={Tag}
                     />
@@ -200,12 +246,15 @@ const CreateEvent: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Start Date & Time <span className="text-red-500">*</span>
+                        Start Date & Time{" "}
+                        <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="datetime-local"
                         value={formData.date}
-                        onChange={(e) => handleInputChange('date', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("date", e.target.value)
+                        }
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-400 focus:outline-none transition-colors duration-200"
                         required
                       />
@@ -217,7 +266,9 @@ const CreateEvent: React.FC = () => {
                       <input
                         type="datetime-local"
                         value={formData.endDate}
-                        onChange={(e) => handleInputChange('endDate', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("endDate", e.target.value)
+                        }
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-400 focus:outline-none transition-colors duration-200"
                       />
                     </div>
@@ -234,7 +285,9 @@ const CreateEvent: React.FC = () => {
                     <Input
                       label="City, State/Country"
                       value={formData.location}
-                      onChange={(e) => handleInputChange('location', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("location", e.target.value)
+                      }
                       placeholder="e.g., Kathmandu, Nepal"
                       icon={MapPin}
                       required
@@ -242,7 +295,9 @@ const CreateEvent: React.FC = () => {
                     <Input
                       label="Venue Name"
                       value={formData.venue}
-                      onChange={(e) => handleInputChange('venue', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("venue", e.target.value)
+                      }
                       placeholder="e.g., Convention Center"
                       required
                     />
@@ -256,10 +311,14 @@ const CreateEvent: React.FC = () => {
                 <Card className="p-6 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-800">
                   <div className="flex items-center mb-3">
                     <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mr-2" />
-                    <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300">Event Creation Fee</h3>
+                    <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300">
+                      Event Creation Fee
+                    </h3>
                   </div>
                   <p className="text-sm text-yellow-700 dark:text-yellow-400 mb-3">
-                    A one-time fee of <strong>NPR {eventCreationFee.toLocaleString()}</strong> is required to publish your event on Planora.
+                    A one-time fee of{" "}
+                    <strong>NPR {eventCreationFee.toLocaleString()}</strong> is
+                    required to publish your event on Planora.
                   </p>
                   <ul className="text-xs text-yellow-600 dark:text-yellow-500 space-y-1">
                     <li>• Event promotion on our platform</li>
@@ -280,7 +339,9 @@ const CreateEvent: React.FC = () => {
                       label="Ticket Price (NPR)"
                       type="number"
                       value={formData.price}
-                      onChange={(e) => handleInputChange('price', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("price", e.target.value)
+                      }
                       placeholder="0"
                       icon={DollarSign}
                       required
@@ -289,7 +350,9 @@ const CreateEvent: React.FC = () => {
                       label="Capacity"
                       type="number"
                       value={formData.capacity}
-                      onChange={(e) => handleInputChange('capacity', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("capacity", e.target.value)
+                      }
                       placeholder="Maximum attendees"
                       icon={Users}
                       required
@@ -306,7 +369,7 @@ const CreateEvent: React.FC = () => {
                   <Input
                     label="Image URL"
                     value={formData.image}
-                    onChange={(e) => handleInputChange('image', e.target.value)}
+                    onChange={(e) => handleInputChange("image", e.target.value)}
                     placeholder="https://example.com/image.jpg"
                     icon={Image}
                   />
@@ -323,7 +386,7 @@ const CreateEvent: React.FC = () => {
                         {error}
                       </div>
                     )}
-                    
+
                     <Button
                       type="submit"
                       className="w-full"
@@ -332,12 +395,12 @@ const CreateEvent: React.FC = () => {
                     >
                       Pay NPR {eventCreationFee.toLocaleString()} & Create Event
                     </Button>
-                    
+
                     <Button
                       type="button"
                       variant="outline"
                       className="w-full"
-                      onClick={() => navigate('/dashboard')}
+                      onClick={() => navigate("/dashboard")}
                     >
                       Cancel
                     </Button>

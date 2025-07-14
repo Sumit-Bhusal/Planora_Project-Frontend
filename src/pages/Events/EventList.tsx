@@ -1,47 +1,68 @@
-import React, { useState, useMemo } from 'react';
-import { Search, Filter, Calendar, MapPin, DollarSign, SlidersHorizontal } from 'lucide-react';
-import { useEvents } from '../../contexts/EventContext';
-import { useAuth } from '../../contexts/AuthContext';
-import EventCard from '../../components/Events/EventCard';
-import Input from '../../components/UI/Input';
-import Button from '../../components/UI/Button';
-import Card from '../../components/UI/Card';
+import React, { useState, useMemo } from "react";
+import {
+  Search,
+  // Filter,
+  // Calendar,
+  // MapPin,
+  // DollarSign,
+  SlidersHorizontal,
+} from "lucide-react";
+import { useEvents } from "../../contexts/EventContext";
+import { useAuth } from "../../contexts/AuthContext";
+import EventCard from "../../components/Events/EventCard";
+import Input from "../../components/UI/Input";
+import Button from "../../components/UI/Button";
+import Card from "../../components/UI/Card";
 
 const EventList: React.FC = () => {
-  const { events, searchEvents, registerForEvent } = useEvents();
+  const { events, searchEvents, registerForEvent, organizerEvents } =
+    useEvents();
   const { user } = useAuth();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
-  const [sortBy, setSortBy] = useState<'date' | 'price' | 'popularity'>('date');
+  const [sortBy, setSortBy] = useState<"date" | "price" | "popularity">("date");
   const [showFilters, setShowFilters] = useState(false);
 
-  const categories = ['Technology', 'Business', 'Arts', 'Sports', 'Music', 'Education'];
+  const categories = [
+    "Technology",
+    "Business",
+    "Arts",
+    "Sports",
+    "Music",
+    "Education",
+  ];
 
   const filteredAndSortedEvents = useMemo(() => {
-    let filtered = searchQuery 
+    let filtered = searchQuery
       ? searchEvents(searchQuery, { category: selectedCategory })
       : events;
 
     // Apply category filter
     if (selectedCategory) {
-      filtered = filtered.filter(event => event.category === selectedCategory);
+      filtered = filtered.filter(
+        (event) => event.category === selectedCategory
+      );
     }
 
     // Apply price filter
-    filtered = filtered.filter(event => 
-      event.price >= priceRange[0] && event.price <= priceRange[1]
+    filtered = filtered.filter(
+      (event) =>
+        Number(event.price) >= priceRange[0] &&
+        Number(event.price) <= priceRange[1]
     );
 
     // Sort events
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'date':
-          return new Date(a.date).getTime() - new Date(b.date).getTime();
-        case 'price':
-          return a.price - b.price;
-        case 'popularity':
-          return b.registeredCount - a.registeredCount;
+        case "date":
+          return (
+            new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+          );
+        case "price":
+          return Number(a.price) - Number(b.price);
+        case "popularity":
+          return (b.currentAttendees ?? 0) - (a.currentAttendees ?? 0);
         default:
           return 0;
       }
@@ -61,8 +82,12 @@ const EventList: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-2">Discover Events</h1>
-          <p className="text-gray-600 dark:text-dark-text-secondary">Find events that match your interests and passions</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-2">
+            Discover Events
+          </h1>
+          <p className="text-gray-600 dark:text-dark-text-secondary">
+            Find events that match your interests and passions
+          </p>
         </div>
 
         {/* Search and Filters */}
@@ -89,7 +114,9 @@ const EventList: React.FC = () => {
               </Button>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as 'date' | 'price' | 'popularity')}
+                onChange={(e) =>
+                  setSortBy(e.target.value as "date" | "price" | "popularity")
+                }
                 className="px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-bg-tertiary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-colors"
               >
                 <option value="date">Sort by Date</option>
@@ -114,8 +141,10 @@ const EventList: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-bg-tertiary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-colors"
                   >
                     <option value="">All Categories</option>
-                    {categories.map(category => (
-                      <option key={category} value={category}>{category}</option>
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -130,15 +159,21 @@ const EventList: React.FC = () => {
                       type="number"
                       placeholder="Min"
                       value={priceRange[0]}
-                      onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+                      onChange={(e) =>
+                        setPriceRange([Number(e.target.value), priceRange[1]])
+                      }
                       className="w-20 px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-bg-tertiary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-colors"
                     />
-                    <span className="text-gray-500 dark:text-dark-text-tertiary">-</span>
+                    <span className="text-gray-500 dark:text-dark-text-tertiary">
+                      -
+                    </span>
                     <input
                       type="number"
                       placeholder="Max"
                       value={priceRange[1]}
-                      onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                      onChange={(e) =>
+                        setPriceRange([priceRange[0], Number(e.target.value)])
+                      }
                       className="w-20 px-3 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-bg-tertiary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-colors"
                     />
                   </div>
@@ -149,9 +184,9 @@ const EventList: React.FC = () => {
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setSelectedCategory('');
+                      setSelectedCategory("");
                       setPriceRange([0, 1000]);
-                      setSearchQuery('');
+                      setSearchQuery("");
                     }}
                     className="w-full"
                   >
@@ -166,23 +201,23 @@ const EventList: React.FC = () => {
         {/* Category Pills */}
         <div className="flex flex-wrap gap-3 mb-8">
           <button
-            onClick={() => setSelectedCategory('')}
+            onClick={() => setSelectedCategory("")}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              selectedCategory === ''
-                ? 'bg-primary-600 dark:bg-primary-500 text-white'
-                : 'bg-white dark:bg-dark-bg-secondary text-gray-700 dark:text-dark-text-primary border border-gray-300 dark:border-dark-border-primary hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary'
+              selectedCategory === ""
+                ? "bg-primary-600 dark:bg-primary-500 text-white"
+                : "bg-white dark:bg-dark-bg-secondary text-gray-700 dark:text-dark-text-primary border border-gray-300 dark:border-dark-border-primary hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary"
             }`}
           >
             All Events
           </button>
-          {categories.map(category => (
+          {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 selectedCategory === category
-                  ? 'bg-primary-600 dark:bg-primary-500 text-white'
-                  : 'bg-white dark:bg-dark-bg-secondary text-gray-700 dark:text-dark-text-primary border border-gray-300 dark:border-dark-border-primary hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary'
+                  ? "bg-primary-600 dark:bg-primary-500 text-white"
+                  : "bg-white dark:bg-dark-bg-secondary text-gray-700 dark:text-dark-text-primary border border-gray-300 dark:border-dark-border-primary hover:bg-gray-50 dark:hover:bg-dark-bg-tertiary"
               }`}
             >
               {category}
@@ -195,15 +230,22 @@ const EventList: React.FC = () => {
           <p className="text-gray-600 dark:text-dark-text-secondary">
             Showing {filteredAndSortedEvents.length} events
             {searchQuery && (
-              <span> for &quot;<span className="font-medium text-gray-900 dark:text-dark-text-primary">{searchQuery}</span>&quot;</span>
+              <span>
+                {" "}
+                for &quot;
+                <span className="font-medium text-gray-900 dark:text-dark-text-primary">
+                  {searchQuery}
+                </span>
+                &quot;
+              </span>
             )}
           </p>
         </div>
 
         {/* Events Grid */}
-        {filteredAndSortedEvents.length > 0 ? (
+        {organizerEvents.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAndSortedEvents.map((event) => (
+            {organizerEvents.map((event) => (
               <EventCard
                 key={event.id}
                 event={event}
@@ -221,11 +263,13 @@ const EventList: React.FC = () => {
             <p className="text-gray-500 dark:text-dark-text-tertiary mb-6">
               Try adjusting your search criteria or browse all events
             </p>
-            <Button onClick={() => {
-              setSearchQuery('');
-              setSelectedCategory('');
-              setPriceRange([0, 1000]);
-            }}>
+            <Button
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedCategory("");
+                setPriceRange([0, 1000]);
+              }}
+            >
               Clear All Filters
             </Button>
           </Card>

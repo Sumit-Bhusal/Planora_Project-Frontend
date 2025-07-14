@@ -1,33 +1,38 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Users, UserCog } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import Input from '../../components/UI/Input';
-import Button from '../../components/UI/Button';
-import Card from '../../components/UI/Card';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Mail, Lock, Eye, EyeOff, Users, UserCog } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import Input from "../../components/UI/Input";
+import Button from "../../components/UI/Button";
+import Card from "../../components/UI/Card";
+import { LoginData } from "../../types/auth";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'user' | 'organizer'>('user');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState<"user" | "organizer">("user");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-  const { login, loginWithGoogle } = useAuth();
+  const { loginWithGoogle, Login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
-      await login(email, password, role);
-      navigate('/dashboard');
+      const data: LoginData = {
+        email: email,
+        password: password,
+      };
+      await Login(data);
+      navigate("/dashboard");
     } catch (err) {
-      setError('Invalid credentials. Please try again.');
+      setError("Invalid credentials. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -35,13 +40,13 @@ const Login: React.FC = () => {
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
-    setError('');
+    setError("");
 
     try {
       await loginWithGoogle(role);
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (err) {
-      setError('Google sign-in failed. Please try again.');
+      setError("Google sign-in failed. Please try again.");
     } finally {
       setIsGoogleLoading(false);
     }
@@ -51,8 +56,12 @@ const Login: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Welcome back</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Sign in to your Planora account</p>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Welcome back
+          </h2>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            Sign in to your Planora account
+          </p>
         </div>
 
         <Card className="p-8">
@@ -64,11 +73,11 @@ const Login: React.FC = () => {
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() => setRole('user')}
+                onClick={() => setRole("user")}
                 className={`p-3 rounded-lg border-2 transition-all ${
-                  role === 'user'
-                    ? 'border-secondary-500 bg-secondary-50 dark:bg-secondary-900/30 text-secondary-700 dark:text-secondary-300'
-                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                  role === "user"
+                    ? "border-secondary-500 bg-secondary-50 dark:bg-secondary-900/30 text-secondary-700 dark:text-secondary-300"
+                    : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
                 }`}
               >
                 <Users className="h-5 w-5 mx-auto mb-1" />
@@ -76,11 +85,11 @@ const Login: React.FC = () => {
               </button>
               <button
                 type="button"
-                onClick={() => setRole('organizer')}
+                onClick={() => setRole("organizer")}
                 className={`p-3 rounded-lg border-2 transition-all ${
-                  role === 'organizer'
-                    ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                  role === "organizer"
+                    ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300"
+                    : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
                 }`}
               >
                 <UserCog className="h-5 w-5 mx-auto mb-1" />
@@ -125,7 +134,9 @@ const Login: React.FC = () => {
               <div className="w-full border-t border-gray-300 dark:border-gray-600" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">Or continue with email</span>
+              <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                Or continue with email
+              </span>
             </div>
           </div>
 
@@ -143,7 +154,7 @@ const Login: React.FC = () => {
             <div className="relative">
               <Input
                 label="Password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 icon={Lock}
@@ -155,7 +166,11 @@ const Login: React.FC = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-8 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
               </button>
             </div>
 
@@ -181,7 +196,9 @@ const Login: React.FC = () => {
                 <div className="w-full border-t border-gray-300 dark:border-gray-600" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">New to Planora?</span>
+                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                  New to Planora?
+                </span>
               </div>
             </div>
 
@@ -195,12 +212,6 @@ const Login: React.FC = () => {
             </div>
           </div>
         </Card>
-
-        <div className="text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Demo credentials: any email/password combination
-          </p>
-        </div>
       </div>
     </div>
   );
