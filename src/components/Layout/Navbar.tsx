@@ -30,28 +30,18 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className={`backdrop-blur-md border-b sticky top-0 z-50 transition-all duration-300 ${
-      isOrganizer 
-        ? 'bg-gradient-to-r from-primary-50/90 to-purple-50/90 dark:from-primary-900/90 dark:to-purple-900/90 border-primary-200 dark:border-primary-700'
-        : 'bg-white/90 dark:bg-dark-bg-primary/90 border-gray-200 dark:border-dark-border-primary'
+      'bg-gradient-to-r from-primary-50/90 to-purple-50/90 dark:from-primary-900/90 dark:to-purple-900/90 border-primary-200 dark:border-primary-700'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2 group">
               <div className="relative">
-                {isOrganizer ? (
-                  <Zap className="h-8 w-8 text-primary-600 dark:text-primary-400 transition-all group-hover:scale-110 group-hover:rotate-12" />
-                ) : (
-                  <Calendar className="h-8 w-8 text-primary-600 dark:text-primary-400 transition-all group-hover:scale-110 group-hover:rotate-12" />
-                )}
+                <Calendar className="h-8 w-8 text-primary-600 dark:text-primary-400 transition-all group-hover:scale-110 group-hover:rotate-12" />
                 <div className="absolute inset-0 bg-primary-600 dark:bg-primary-400 rounded-full opacity-20 animate-pulse"></div>
               </div>
-              <span className={`font-bold text-xl bg-clip-text text-transparent ${
-                isOrganizer
-                  ? 'bg-gradient-to-r from-primary-600 to-purple-600 dark:from-primary-400 dark:to-purple-400'
-                  : 'bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-400 dark:to-secondary-400'
-              }`}>
-                Planora {isOrganizer && <span className="text-xs">Pro</span>}
+              <span className={`font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-400 dark:to-secondary-400`}>
+                Planora
               </span>
             </Link>
           </div>

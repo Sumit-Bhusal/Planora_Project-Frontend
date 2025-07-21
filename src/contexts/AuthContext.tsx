@@ -56,6 +56,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         id: userData.sub,
         name: userData.name,
         avatar: `https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop`,
+        role: (userData as any).role || "user", // Default to 'user' if not present
+        email: (userData as any).email || undefined,
       };
       setCookie({
         accessToken: response.data.accessToken,
@@ -76,6 +78,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         id: userData.sub,
         name: userData.name,
         avatar: `https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop`,
+        role: (userData as any).role || "user", // Default to 'user' if not present
+        email: (userData as any).email || undefined,
       };
       setCookie({
         accessToken: response.data.accessToken,
@@ -96,6 +100,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       id: Math.random().toString(36).substr(2, 9),
       name: "Google User",
       avatar: `https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop`,
+      role: "user", // Default role for mock Google user
+      email: "googleuser@example.com",
     };
 
     setUser(googleUser);

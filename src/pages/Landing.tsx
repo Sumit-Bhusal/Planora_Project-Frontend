@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { Calendar, Users, BarChart3, Zap, ArrowRight, Star, CheckCircle, Sparkles, Rocket, Globe } from 'lucide-react';
 import Button from '../components/UI/Button';
 import Card from '../components/UI/Card';
+import eventImg from '../assets/event.jpg';
+import MeshBG from '../assets/mesh-bg.png';
+import BackgroundImg from '../assets/Background.png';
 
 const Landing: React.FC = () => {
   const features = [
@@ -32,70 +35,42 @@ const Landing: React.FC = () => {
     }
   ];
 
-  const stats = [
-    { value: '50K+', label: 'Events Created', icon: Calendar },
-    { value: '2M+', label: 'Attendees Connected', icon: Users },
-    { value: '98%', label: 'Success Rate', icon: CheckCircle },
-    { value: '24/7', label: 'Support Available', icon: Sparkles }
-  ];
-
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-blue-50 to-teal-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20">
-        {/* Animated background elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-purple-300 dark:bg-purple-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 animate-blob"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-yellow-300 dark:bg-yellow-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 dark:bg-pink-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="text-center">
-            <div className="flex justify-center mb-6">
-              <div className="relative">
-                <Rocket className="h-16 w-16 text-primary-600 dark:text-primary-400 animate-bounce" />
-                <div className="absolute inset-0 bg-primary-600 dark:bg-primary-400 rounded-full opacity-20 animate-ping"></div>
-              </div>
-            </div>
-            
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              Create <span className="bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-400 dark:to-secondary-400 bg-clip-text text-transparent animate-pulse">
+      <section className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-blue-50 to-teal-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20 min-h-[70vh] flex items-center">
+        {/* Full background image */}
+        <img src={eventImg} alt="Event" className="absolute inset-0 w-full h-full object-cover z-0" />
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-white/60 to-blue-100/60 dark:from-gray-900/80 dark:via-purple-900/60 dark:to-blue-900/60 z-10" />
+        {/* Hero Content */}
+        <div className="relative z-30 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full flex flex-col items-center justify-center text-center">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)] mb-6">
+            Create <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-500 bg-clip-text text-transparent animate-pulse drop-shadow-[0_2px_12px_rgba(255,255,255,0.8)]">
                 Unforgettable
               </span> Events
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl text-white font-semibold mb-8 max-w-3xl mx-auto drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
               The modern platform that connects event organizers with their perfect audience. 
-              From intimate workshops to large conferences, we make event management effortless with AI-powered insights.
+            From intimate workshops to large conferences, we make event management effortless with <span className="text-primary-200 font-bold">AI-powered insights</span>.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button size="lg" icon={ArrowRight} iconPosition="right" className="group">
+            <Button size="lg" icon={ArrowRight} iconPosition="right" className="group bg-primary-600 hover:bg-primary-700 text-white font-bold shadow-lg shadow-primary-500/30 border-2 border-white/40 backdrop-blur-md">
                 <Link to="/signup">
                   <span className="group-hover:mr-1 transition-all">Start Creating Events</span>
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" icon={Globe}>
-                <Link to="/events">Discover Events</Link>
+            <Button variant="outline" size="lg" icon={Globe} className="bg-white/80 hover:bg-white text-primary-700 font-bold border-2 border-primary-400 shadow-lg shadow-primary-400/20">
+              <Link to="/signup">Discover Events</Link>
               </Button>
-            </div>
-            
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16">
-              {stats.map((stat, index) => (
-                <Card key={index} className="p-6 text-center hover:scale-105 transition-transform duration-300" hover>
-                  <stat.icon className="h-8 w-8 text-primary-600 dark:text-primary-400 mx-auto mb-2" />
-                  <div className="text-3xl font-bold text-primary-600 dark:text-primary-400 mb-1">{stat.value}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</div>
-                </Card>
-              ))}
-            </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 relative overflow-hidden">
+        <img src={BackgroundImg} alt="Decorative Background" className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none z-0" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <div className="flex justify-center mb-4">
               <Sparkles className="h-12 w-12 text-primary-600 dark:text-primary-400 animate-pulse" />
@@ -108,7 +83,6 @@ const Landing: React.FC = () => {
               more engaging and successful.
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
               <Card key={index} className="p-6 text-center group" hover>
@@ -128,8 +102,9 @@ const Landing: React.FC = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 relative overflow-hidden bg-gray-50 dark:bg-gray-800">
+        <img src={BackgroundImg} alt="Decorative Background" className="absolute inset-0 w-full h-full object-cover opacity-15 pointer-events-none z-0" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               How Planora Works
@@ -138,7 +113,6 @@ const Landing: React.FC = () => {
               Three simple steps to create amazing events
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
@@ -180,82 +154,46 @@ const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="py-20 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Trusted by Event Creators Worldwide
-            </h2>
+      {/* Vision/Mission Section */}
+      <section className="py-12 relative flex justify-center items-center bg-gradient-to-br from-blue-50 via-purple-50 to-teal-50 dark:from-gray-900 dark:via-blue-900/40 dark:to-purple-900/40 overflow-hidden">
+        {/* Mesh or animated background */}
+        <img src={MeshBG} alt="Mesh" className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none z-0" />
+        <div className="max-w-3xl w-full mx-auto p-8 rounded-3xl shadow-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-md z-10 border border-white/30 dark:border-gray-700/40">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-primary-600 dark:text-primary-400 mb-4">Our Vision</h2>
+          <p className="text-lg text-gray-700 dark:text-gray-200 text-center">
+            Planora is on a mission to revolutionize event management with smart, AI-driven tools that empower organizers and delight attendees.
+          </p>
           </div>
+      </section>
 
+      {/* Who Is It For Section */}
+      <section className="py-12 relative bg-gradient-to-br from-purple-50 via-blue-50 to-teal-50 dark:from-gray-900 dark:via-purple-900/40 dark:to-blue-900/40 overflow-hidden">
+        <img src={MeshBG} alt="Mesh" className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none z-0" />
+        <div className="max-w-6xl mx-auto px-4 z-10">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">Who Is Planora For?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              {
-                name: 'Sarah Johnson',
-                role: 'Conference Organizer',
-                content: 'Planora transformed how I manage my tech conferences. The analytics help me understand my audience better.',
-                rating: 5,
-                avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop'
-              },
-              {
-                name: 'Mike Chen',
-                role: 'Workshop Leader',
-                content: 'The interest-based matching is incredible. I now get participants who are genuinely excited about my workshops.',
-                rating: 5,
-                avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop'
-              },
-              {
-                name: 'Lisa Rodriguez',
-                role: 'Community Manager',
-                content: 'From small meetups to large events, Planora scales perfectly. The ticketing system is seamless.',
-                rating: 5,
-                avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop'
-              }
-            ].map((testimonial, index) => (
-              <Card key={index} className="p-6 hover:scale-105 transition-transform duration-300" hover>
-                <div className="flex mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                  ))}
+              { icon: Users, title: 'Event Organizers', desc: 'Effortlessly manage and promote your events.' },
+              { icon: Calendar, title: 'Community Managers', desc: 'Engage your audience and grow your community.' },
+              { icon: BarChart3, title: 'Workshop Leaders', desc: 'Reach participants who are truly interested.' }
+            ].map((item, idx) => (
+              <div key={idx} className="p-6 rounded-2xl shadow-lg bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border border-white/30 dark:border-gray-700/40 flex flex-col items-center hover:scale-105 transition-transform duration-300 animate-fade-in">
+                <item.icon className="h-10 w-10 text-primary-600 dark:text-primary-400 mb-4 animate-bounce" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{item.title}</h3>
+                <p className="text-gray-600 dark:text-gray-300 text-center">{item.desc}</p>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">"{testimonial.content}"</p>
-                <div className="flex items-center">
-                  <img 
-                    src={testimonial.avatar} 
-                    alt={testimonial.name}
-                    className="w-12 h-12 rounded-full mr-4"
-                  />
-                  <div>
-                    <div className="font-semibold text-gray-900 dark:text-white">{testimonial.name}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{testimonial.role}</div>
-                  </div>
-                </div>
-              </Card>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-500 dark:to-secondary-500 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Sparkles className="h-16 w-16 text-white mx-auto mb-6 animate-pulse" />
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Ready to Create Your Next Event?
-          </h2>
-          <p className="text-xl text-primary-100 mb-8">
-            Join thousands of successful event creators who trust Planora
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="secondary" size="lg" icon={Rocket}>
-              <Link to="/signup">Get Started Free</Link>
-            </Button>
-            <Button variant="outline" size="lg" className="text-white border-white hover:bg-white hover:text-primary-600" icon={Globe}>
-              <Link to="/events">Browse Events</Link>
-            </Button>
-          </div>
+      {/* Security & Trust Section */}
+      <section className="py-12 relative flex justify-center items-center bg-gradient-to-br from-blue-50 via-purple-50 to-teal-50 dark:from-gray-900 dark:via-blue-900/40 dark:to-purple-900/40 overflow-hidden">
+        <img src={MeshBG} alt="Mesh" className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none z-0" />
+        <div className="max-w-2xl w-full mx-auto p-8 rounded-3xl shadow-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-md z-10 border border-white/30 dark:border-gray-700/40 flex flex-col items-center animate-fade-in">
+          <CheckCircle className="h-12 w-12 text-green-500 mb-4 animate-pulse" />
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Security & Privacy</h2>
+          <p className="text-gray-700 dark:text-gray-200 text-center">Your data is secure with us. Planora uses industry-standard encryption and privacy practices to keep your information safe.</p>
         </div>
       </section>
     </div>

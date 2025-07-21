@@ -5,6 +5,8 @@ export interface User {
   // role: "user" | "organizer";
   // interests?: string[];
   avatar?: string;
+  role: "user" | "organizer";
+  email?: string;
   // createdAt?: Date;
 }
 
