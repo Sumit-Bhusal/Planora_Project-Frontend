@@ -81,7 +81,7 @@ const Dashboard: React.FC = () => {
           value: organizerEvents.length.toString(),
           color: "text-primary-600 dark:text-primary-400",
           bgColor: "bg-primary-50 dark:bg-primary-900/30",
-          change: "+12%",
+          change: "",
           description: "Events created",
         },
         {
@@ -92,7 +92,7 @@ const Dashboard: React.FC = () => {
             .toString(),
           color: "text-purple-600 dark:text-purple-400",
           bgColor: "bg-purple-50 dark:bg-purple-900/30",
-          change: "+8%",
+          change: "",
           description: "People registered",
         },
         {
@@ -107,7 +107,7 @@ const Dashboard: React.FC = () => {
             .toLocaleString()}`,
           color: "text-green-600 dark:text-green-400",
           bgColor: "bg-green-50 dark:bg-green-900/30",
-          change: "+23%",
+          change: "",
           description: "Total earnings",
         },
         {
@@ -124,10 +124,10 @@ const Dashboard: React.FC = () => {
                     organizerEvents.length) *
                     100
                 )}%`
-              : "0%",
+              : "",
           color: "text-orange-600 dark:text-orange-400",
           bgColor: "bg-orange-50 dark:bg-orange-900/30",
-          change: "+5%",
+          change: "",
           description: "Capacity utilization",
         },
       ]
@@ -138,7 +138,7 @@ const Dashboard: React.FC = () => {
           value: userTickets.length.toString(),
           color: "text-secondary-600 dark:text-secondary-400",
           bgColor: "bg-secondary-50 dark:bg-secondary-900/30",
-          change: "+15%",
+          change: "",
           description: "Total events",
         },
         {
@@ -147,7 +147,7 @@ const Dashboard: React.FC = () => {
           value: (user.interests || []).length.toString(),
           color: "text-yellow-600 dark:text-yellow-400",
           bgColor: "bg-yellow-50 dark:bg-yellow-900/30",
-          change: "+2",
+          change: "",
           description: "Interests set",
         },
         {
@@ -156,7 +156,7 @@ const Dashboard: React.FC = () => {
           value: activeTickets.length.toString(),
           color: "text-blue-600 dark:text-blue-400",
           bgColor: "bg-blue-50 dark:bg-blue-900/30",
-          change: "+3",
+          change: "",
           description: "Active tickets",
         },
         {
@@ -165,7 +165,7 @@ const Dashboard: React.FC = () => {
           value: "12",
           color: "text-pink-600 dark:text-pink-400",
           bgColor: "bg-pink-50 dark:bg-pink-900/30",
-          change: "+5",
+          change: "",
           description: "Bookmarked",
         },
       ];

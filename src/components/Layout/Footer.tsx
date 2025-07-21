@@ -77,15 +77,15 @@ const Footer: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-gray-400 dark:text-dark-text-tertiary">
                 <Mail className="h-4 w-4" />
-                <span className="text-sm">support@planora.com</span>
+                <span className="text-sm">info@planora.com</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-400 dark:text-dark-text-tertiary">
                 <Phone className="h-4 w-4" />
-                <span className="text-sm">+1 (555) 123-4567</span>
+                <span className="text-sm">+977 9801234577</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-400 dark:text-dark-text-tertiary">
                 <MapPin className="h-4 w-4" />
-                <span className="text-sm">San Francisco, CA</span>
+                <span className="text-sm">Kathmandu, Nepal</span>
               </div>
             </div>
           </div>
@@ -93,7 +93,7 @@ const Footer: React.FC = () => {
 
         <div className="border-t border-gray-800 dark:border-dark-border-primary mt-8 pt-8 text-center">
           <p className="text-gray-400 dark:text-dark-text-tertiary text-sm">
-            © 2024 Planora. All rights reserved. Built with ❤️ for event creators worldwide.
+            © 2024 Planora. All rights reserved. Built with for event creators worldwide.
           </p>
         </div>
       </div>
