@@ -5,6 +5,10 @@ export interface RegisterData {
   lastName: string;
   roles?: string[];
   username: string;
+  gender: string;
+  city: string;
+  interests: string[];
+  age: number;
 }
 
 export interface LoginData {

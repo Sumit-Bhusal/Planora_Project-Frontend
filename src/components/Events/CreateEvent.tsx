@@ -9,9 +9,10 @@ import Card from '../../components/UI/Card';
 import PaymentModal from '../../components/Payment/PaymentModal';
 
 const CreateEvent: React.FC = () => {
-  const { createEvent } = useEvents();
+  const { createEvent} = useEvents();
   const { user } = useAuth();
   const navigate = useNavigate();
+  
 
   const [formData, setFormData] = useState({
     title: '',
@@ -25,6 +26,7 @@ const CreateEvent: React.FC = () => {
     capacity: '',
     image: '',
     tags: '',
+    
   });
 
   const [isLoading, setIsLoading] = useState(false);

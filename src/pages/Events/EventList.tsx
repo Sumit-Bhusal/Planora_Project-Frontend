@@ -48,8 +48,8 @@ const EventList: React.FC = () => {
     // Apply price filter
     filtered = filtered.filter(
       (event) =>
-        Number(event.price) >= priceRange[0] &&
-        Number(event.price) <= priceRange[1]
+        Number(event.ticketPrice) >= priceRange[0] &&
+        Number(event.ticketPrice) <= priceRange[1]
     );
 
     // Sort events
@@ -60,7 +60,7 @@ const EventList: React.FC = () => {
             new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
           );
         case "price":
-          return Number(a.price) - Number(b.price);
+          return Number(a.ticketPrice) - Number(b.ticketPrice);
         case "popularity":
           return (b.currentAttendees ?? 0) - (a.currentAttendees ?? 0);
         default:
@@ -249,6 +249,7 @@ const EventList: React.FC = () => {
               <EventCard
                 key={event.id}
                 event={event}
+                variant="organizer"
                 onRegister={() => handleRegister(event.id)}
                 showActions={!!user}
               />

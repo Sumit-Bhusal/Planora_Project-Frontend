@@ -4,11 +4,13 @@ import { useEvents } from "../contexts/EventContext";
 import { useTickets } from "../contexts/TicketContext";
 import UserDashboard from "./UserDashboard";
 import OrganizerDashboard from "./OrganizerDashboard";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  const { registerForEvent, organizerEvents } = useEvents();
+  const { registerForEvent, organizerEvents, startEditingEvent } = useEvents();
   const { getActiveTickets } = useTickets();
+  const navigate = useNavigate();
 
   if (!user) return null;
 
@@ -16,13 +18,18 @@ const Dashboard: React.FC = () => {
   const activeTickets = getActiveTickets();
   const recommendedEvents: any[] = [];
 
+  const handleEventEdit = (event: any) => {
+    startEditingEvent(event);
+    navigate("/create-event");
+  };
+
   return isOrganizer ? (
     <OrganizerDashboard
       user={user}
       organizerEvents={organizerEvents}
       handleManageAttendees={() => {}}
       handleShareEvents={() => {}}
-      handleEventEdit={() => {}}
+      handleEventEdit={handleEventEdit}
       handleEventAnalytics={() => {}}
       handleEventShare={() => {}}
     />

@@ -37,7 +37,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 const AppContent: React.FC = () => {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col bg-white dark:bg-dark-bg-primary transition-colors duration-300">
+      <div className="min-h-screen flex flex-col bg-white dark:bg-dark-bg-primary transition-colors duration-300 hidescroll">
         <Navbar />
         <main className="flex-1">
           <Routes>

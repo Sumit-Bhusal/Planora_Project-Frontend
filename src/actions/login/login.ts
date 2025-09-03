@@ -1,5 +1,6 @@
 import axios from "axios";
 import { RegisterData, LoginData } from "../../types/auth";
+import axiosInstance from '../../lib/axiosInstance';
 
 export const registerUserandOrganizer = async (data: RegisterData) => {
   try {
@@ -75,4 +76,8 @@ export const UserLogin = async (data: LoginData) => {
       message: "Failed to send your request due to a network or server error",
     };
   }
+};
+
+export const loginUser = async (data: any) => {
+  return axiosInstance.post('/auth/login', data);
 };

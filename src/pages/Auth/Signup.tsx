@@ -32,6 +32,9 @@ const Signup: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState<"user" | "organizer">("user");
   const [interests, setInterests] = useState<string[]>([]);
+  const [gender, setGender] = useState("");
+  const [city, setCity] = useState("");
+  const [age, setAge] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -74,6 +77,11 @@ const Signup: React.FC = () => {
       return;
     }
 
+    if (!gender || !city || !age) {
+      setError("Please fill in all fields");
+      return;
+    }
+
     if (role === "user" && interests.length === 0) {
       setError("Please select at least one interest");
       return;
@@ -87,8 +95,12 @@ const Signup: React.FC = () => {
         password,
         firstName: firstname,
         lastName: lastname,
-        roles: ["user", "organizer"],
         username,
+        gender,
+        city,
+        interests,
+        age: Number(age),
+        roles: ["user", "organizer"]
       };
       await register(data);
       navigate("/dashboard");
@@ -114,7 +126,7 @@ const Signup: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (!firstname || !lastname || !email || !password || !confirmPassword) {
+    if (!firstname || !lastname || !email || !password || !confirmPassword || !gender || !city || !age) {
       setError("Please fill in all fields");
       return;
     }
@@ -136,8 +148,11 @@ const Signup: React.FC = () => {
         password,
         firstName: firstname,
         lastName: lastname,
-        roles: ["organizer"],
         username,
+        gender,
+        city,
+        interests,
+        age: Number(age),
       })
         .then(() => navigate("/dashboard"))
         .catch(() => setError("Failed to create account. Please try again."))
@@ -316,6 +331,41 @@ const Signup: React.FC = () => {
                   placeholder="Confirm your password"
                 />
 
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Gender
+                  </label>
+                  <select
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                    className="w-full p-2 border rounded"
+                    required
+                  >
+                    <option value="">Select gender</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <Input
+                  label="City"
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  required
+                  placeholder="Enter your city"
+                />
+
+                <Input
+                  label="Age"
+                  type="number"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                  required
+                  placeholder="Enter your age"
+                />
+
                 {error && (
                   <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg">
                     {error}
@@ -331,7 +381,10 @@ const Signup: React.FC = () => {
                     !lastname ||
                     !email ||
                     !password ||
-                    !confirmPassword
+                    !confirmPassword ||
+                    !gender ||
+                    !city ||
+                    !age
                   }
                 >
                   Continue

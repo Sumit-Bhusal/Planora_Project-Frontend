@@ -91,9 +91,9 @@ const UserDashboard: React.FC<{ user: any; activeTickets: any[]; recommendedEven
 
         {/* Recommended Events */}
         <Card className="p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 overflow-hidden" >
             <h3 className="text-lg font-semibold text-gray-900 dark:text-dark-text-primary flex items-center">
-              <Sparkles className="h-5 w-5 mr-2 text-secondary-600 dark:text-secondary-400" />
+              <Sparkles className="h-5  mr-2 text-secondary-600 dark:text-secondary-400" />
               Recommended for You
             </h3>
             <Link to="/events" className="text-sm font-medium text-secondary-600 dark:text-secondary-400 hover:text-secondary-700 dark:hover:text-secondary-300 flex items-center space-x-1">
@@ -108,10 +108,10 @@ const UserDashboard: React.FC<{ user: any; activeTickets: any[]; recommendedEven
               ))}
             </div>
           ) : (
-            <Card className="p-12 text-center bg-gradient-to-br from-secondary-50 to-blue-50 dark:from-secondary-900/20 dark:to-blue-900/20 border-secondary-200 dark:border-secondary-800">
-              <div className="relative mb-6">
-                <Sparkles className="h-16 w-16 text-secondary-400 dark:text-secondary-500 mx-auto animate-float" />
-                <div className="absolute inset-0 bg-secondary-400 dark:bg-secondary-500 rounded-full opacity-20 animate-ping"></div>
+            <Card className="p-12 text-center bg-gradient-to-br from-secondary-50 to-blue-50 dark:from-secondary-900/20 dark:to-blue-900/20 border-secondary-200 dark:border-secondary-800 overflow-hidden">
+              <div className="relative mb-6 ">
+                <Sparkles className="h-16 w-9 text-secondary-400 dark:text-secondary-500 mx-auto animate-float" />
+                <div className="absolute inset-0 bg-secondary-400 dark:bg-secondary-500 rounded-full opacity-20 animate-ping w-full "></div>
               </div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-dark-text-primary mb-2">Discover Amazing Events</h3>
               <p className="text-gray-500 dark:text-dark-text-tertiary mb-6">Set your interests to get personalized event recommendations</p>
@@ -155,4 +155,4 @@ const UserDashboard: React.FC<{ user: any; activeTickets: any[]; recommendedEven
   );
 };
 
-export default UserDashboard; 
+export default UserDashboard;

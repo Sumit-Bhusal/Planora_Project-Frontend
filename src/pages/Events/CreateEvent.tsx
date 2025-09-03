@@ -9,17 +9,22 @@ import {
   Tag,
   Save,
   Sparkles,
-  AlertTriangle,
 } from "lucide-react";
 import { useEvents } from "../../contexts/EventContext";
 import { useAuth } from "../../contexts/AuthContext";
 import Input from "../../components/UI/Input";
 import Button from "../../components/UI/Button";
 import Card from "../../components/UI/Card";
-import PaymentModal from "../../components/Payment/PaymentModal";
+import { useEffect } from "react";
+import { format } from "date-fns";
+
+function toDatetimeLocal(dateString: string) {
+  if (!dateString) return "";
+  return format(new Date(dateString), "yyyy-MM-dd'T'HH:mm");
+}
 
 const CreateEvent: React.FC = () => {
-  const { createEvent } = useEvents();
+  const { createEvent, updateEvent, isEditing, editingEvent, setEditingEvent, fetchEvents } = useEvents();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -27,19 +32,24 @@ const CreateEvent: React.FC = () => {
     title: "",
     description: "",
     category: "",
-    date: "",
+    startDate: "",
     endDate: "",
-    location: "",
+    city: "",
     venue: "",
-    price: "",
-    capacity: "",
-    image: "",
+    venueType: "",
+    venueSuitability: [] as string[],
+    venueCapacity: "",
+    venueAmbiance: "",
+    venueLocationType: "",
+    ticketPrice: "",
+    priceCategory: "",
+    maxAttendees: "",
     tags: "",
+    imageUrl: "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const categories = [
     "Technology",
@@ -48,8 +58,112 @@ const CreateEvent: React.FC = () => {
     "Sports",
     "Music",
     "Education",
+    "Health & Wellness",
+    "Photography",
+    "Social"
   ];
-  const eventCreationFee = 10000; // NPR 10,000
+
+  // Add options for enums
+  const venueTypes = [
+    "City Hall",
+    "Resort",
+    "Mall",
+    "Heritage",
+    "Banquet Hall",
+    "Party Palace",
+    "Hotel",
+    "Exhibition Center",
+    "Museum",
+    "Convention Center"
+  ];
+  const venueSuitabilityOptions = [
+    "Government",
+    "Programs",
+    "Lectures",
+    "Expos",
+    "Exhibitions",
+    "Retreats",
+    "Wellness",
+    "Gatherings",
+    "Parties",
+    "Summits",
+    "Weddings",
+    "AIMeetups",
+    "Receptions",
+    "Conferences",
+    "MegaWeddings",
+    "Seminars",
+    "HeritageExpos",
+    "Workshops",
+    "Camps",
+    "CommunityEvents",
+    "ArtTech",
+    "Fairs"
+  ];
+  const venueCapacities = ["Small", "Medium", "Large"];
+  const venueAmbiances = ["Casual", "Formal", "Rustic", "Modern", "Elegant", "Industrial", "Outdoor", "Indoor", "Cozy", "Vibrant", "Sophisticated", "Intimate", "Luxurious", "Minimalist", "Artistic", "Themed", "Classic", "Trendy", "Eclectic", "Unique", "Professional", "Relaxed", "Welcoming", "Lively", "Serene", "Chic", "Contemporary", "Rustic Chic", "Vintage", "Bohemian", "Urban", "Coastal", "Mountain", "Garden", "Beach", "Forest"];
+  const venueLocationTypes = ["Urban", "Suburban", "Rural", "Waterfront", "Mountainous", "Forested", "Desert", "Coastal", "Countryside", "CityCenter", "Downtown", "HistoricDistrict"];
+  const priceCategories = ["Free", "Cheap", "Medium", "Expensive", "VeryExpensive", "Premium", "Luxury", "Exclusive", "VIP"];
+
+  const venues = [
+    { name: "Hotel Yak & Yeti", address: "Durbar Marg, Kathmandu 44600" },
+    { name: "Bhrikuti Mandap Exhibition Hall", address: "Exhibition Road, Kathmandu 44600" },
+    { name: "Soaltee Kathmandu (Autograph Collection)", address: "Tahachal‑13, Kathmandu 44600" },
+    { name: "The Malla Hotel", address: "Lekhnath Marg, Kathmandu 44600" },
+    { name: "Rastriya Sabha Griha (City Hall)", address: "Kathmandu‑28, Kathmandu 44600" },
+    { name: "Pokhara Grande Hotel", address: "Birauta Chowk, Pardi-17, Pokhara" },
+    { name: "International Mountain Museum", address: "Ratopairo, Pokhara 33700" },
+    { name: "Hotel Barahi Conference Hall", address: "Lakeside Pokhara, near Fewa Lake, Pokhara 33700" },
+    { name: "Annapurna Events Centre", address: "Shrikrishna Marga, Bulaudai - 6, Pokhara" },
+    { name: "Temple Tree Resort & Spa", address: "Gaurighat-6, Lakeside Pokhara" },
+    { name: "Patan Museum Courtyard", address: "Patan Durbar Square, UNESCO core zone, Lalitpur" },
+    { name: "The Summit Hotel", address: "Patan, Lalitpur" },
+    { name: "Godavari Village Resort", address: "Godavari‑3, Lalitpur (12–13 km SE of Kathmandu center)" },
+    { name: "Labim Mall Event Spaces", address: "Pulchowk, Lalitpur (Labim Mall complex)" },
+    { name: "Hotel Himalaya", address: "Kupondole Height, Lalitpur" },
+    { name: "Bhaktapur Durbar Square Courtyard", address: "Durbar Square, Bhaktapur‑11 (Nyatapola), UNESCO zone" },
+    { name: "Vajra Hotel & Convention Centre", address: "Off Nagarkot Road, Bhaktapur municipality" },
+    { name: "Heritage Banquet Bhaktapur", address: "Near Ring Road, Bhaktapur" },
+    { name: "Peace Land Party Palace", address: "Suburban Bhaktapur (exact street needs local validation)" },
+    { name: "Nagarkot Farm House", address: "Nagarkot‑2, Bhaktapur District (~12 km NE from city center)" },
+    { name: "Bharatpur Garden Resort", address: "Bharatpur‑10 (Bharatpur Height), Chitwan" },
+    { name: "Hotel Royal Century", address: "Bharatpur Height, Bharatpur 44600" },
+    { name: "Chitwan Expo Center", address: "Bharatpur‑10, Chitwan" },
+    { name: "Green Park Chitwan", address: "Sauraha‑15, Chitwan (near National Park entry)" },
+    { name: "Rhino Residency Resort", address: "Sauraha‑15, Chitwan" },
+    { name: "Butwal International Convention Centre (BICC)", address: "~500 m east of Butwal city center, Siddhartha Highway (Butwal‑6)" },
+    { name: "Hotel Da Flamingo", address: "Jogikuti, Butwal 44600" },
+    { name: "Dreamland Gold Resort & Hotel", address: "Tilottama‑5, Manigram, Rupandehi" },
+    { name: "Hotel Tulip", address: "Nar and Malla Path, Jogikuti, Butwal 32907" },
+    { name: "Hotel Avenue", address: "Golpark‑5, ~1.8 km west of Butwal center" },
+  ];
+
+  useEffect(() => {
+    if (editingEvent && editingEvent.id) {
+      setFormData({
+        title: editingEvent.title,
+        description: editingEvent.description,
+        category: editingEvent.category,
+        startDate: toDatetimeLocal(editingEvent.startDate),
+        endDate: toDatetimeLocal(editingEvent.endDate),
+        city: editingEvent.city,
+        venue: editingEvent.venue,
+        venueType: editingEvent.venueType,
+        venueSuitability: editingEvent.venueSuitability || [],
+        venueCapacity: editingEvent.venueCapacity,
+        venueAmbiance: editingEvent.venueAmbiance,
+        venueLocationType: editingEvent.venueLocationType,
+        ticketPrice: String(editingEvent.ticketPrice),
+        priceCategory: editingEvent.priceCategory,
+        maxAttendees: String(editingEvent.maxAttendees),
+        tags: (editingEvent.tags || []).join(", "),
+        imageUrl: editingEvent.imageUrl || "",
+      });
+    }
+    // Do NOT clear editingEvent here!
+    // Only clear after update or cancel.
+    // eslint-disable-next-line
+  }, [editingEvent]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -60,36 +174,42 @@ const CreateEvent: React.FC = () => {
       !formData.title ||
       !formData.description ||
       !formData.category ||
-      !formData.date ||
-      !formData.location ||
+      !formData.startDate ||
+      !formData.city ||
       !formData.venue ||
-      !formData.price ||
-      !formData.capacity
+      !formData.venueType ||
+      !formData.venueSuitability.length ||
+      !formData.venueCapacity ||
+      !formData.venueAmbiance ||
+      !formData.venueLocationType ||
+      !formData.ticketPrice ||
+      !formData.priceCategory ||
+      !formData.maxAttendees
     ) {
       setError("Please fill in all required fields");
       return false;
     }
 
-    if (new Date(formData.date) <= new Date()) {
+    if (new Date(formData.startDate) <= new Date()) {
       setError("Event date must be in the future");
       return false;
     }
 
     if (
       formData.endDate &&
-      new Date(formData.endDate) <= new Date(formData.date)
+      new Date(formData.endDate) <= new Date(formData.startDate)
     ) {
       setError("End date must be after start date");
       return false;
     }
 
-    if (parseFloat(formData.price) < 0) {
-      setError("Price cannot be negative");
+    if (parseFloat(formData.ticketPrice) < 0) {
+      setError("Ticket price cannot be negative");
       return false;
     }
 
-    if (parseInt(formData.capacity) < 1) {
-      setError("Capacity must be at least 1");
+    if (parseInt(formData.maxAttendees) < 1) {
+      setError("Maximum attendees must be at least 1");
       return false;
     }
 
@@ -109,39 +229,39 @@ const CreateEvent: React.FC = () => {
       return;
     }
 
-    // Show payment modal for event creation fee
-    setShowPaymentModal(true);
-  };
-
-  const handlePaymentSuccess = async () => {
     setIsLoading(true);
 
     try {
       const eventData = {
         title: formData.title,
         description: formData.description,
-        organizer: user,
         category: formData.category,
-        date: new Date(formData.date),
-        endDate: formData.endDate ? new Date(formData.endDate) : undefined,
-        location: formData.location,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        city: formData.city,
         venue: formData.venue,
-        price: parseFloat(formData.price),
-        capacity: parseInt(formData.capacity),
-        image:
-          formData.image ||
-          "https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        tags: formData.tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter((tag) => tag),
-        status: "published" as const,
+        venueType: formData.venueType,
+        venueSuitability: formData.venueSuitability,
+        venueCapacity: formData.venueCapacity,
+        venueAmbiance: formData.venueAmbiance,
+        venueLocationType: formData.venueLocationType,
+        ticketPrice: Number(formData.ticketPrice),
+        priceCategory: formData.priceCategory,
+        maxAttendees: Number(formData.maxAttendees),
+        tags: formData.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+        imageUrl: formData.imageUrl,
       };
-
-      createEvent(eventData);
+      if (editingEvent && editingEvent.id) {
+        await updateEvent(editingEvent.id, eventData);
+        await fetchEvents();
+        setEditingEvent(null);
+      } else {
+        await createEvent(eventData);
+        await fetchEvents();
+      }
       navigate("/dashboard");
     } catch (err) {
-      setError("Failed to create event. Please try again.");
+      setError("Failed to save event. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -236,7 +356,110 @@ const CreateEvent: React.FC = () => {
                     />
                   </div>
                 </Card>
-
+                {/* Venue Details */}
+                <Card className="p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <Sparkles className="h-5 w-5 mr-2 text-primary-600 dark:text-primary-400" />
+                    Venue Details
+                  </h2>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue Type <span className="text-red-500">*</span></label>
+                      <select
+                        value={formData.venueType}
+                        onChange={(e) => handleInputChange("venueType", e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        required
+                      >
+                        <option value="">Select venue type</option>
+                        {venueTypes.map((type) => (
+                          <option key={type} value={type}>{type}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue Suitability <span className="text-red-500">*</span></label>
+                      <div className="flex flex-wrap gap-2">
+                        {venueSuitabilityOptions.map((option) => (
+                          <label key={option} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              checked={formData.venueSuitability.includes(option)}
+                              onChange={() => {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  venueSuitability: prev.venueSuitability.includes(option)
+                                    ? prev.venueSuitability.filter((v) => v !== option)
+                                    : [...prev.venueSuitability, option],
+                                }));
+                              }}
+                            />
+                            <span className="ml-2">{option}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue Capacity <span className="text-red-500">*</span></label>
+                      <select
+                        value={formData.venueCapacity}
+                        onChange={(e) => handleInputChange("venueCapacity", e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        required
+                      >
+                        <option value="">Select capacity</option>
+                        {venueCapacities.map((cap) => (
+                          <option key={cap} value={cap}>{cap}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue Ambiance <span className="text-red-500">*</span></label>
+                      <select
+                        value={formData.venueAmbiance}
+                        onChange={(e) => handleInputChange("venueAmbiance", e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        required
+                      >
+                        <option value="">Select ambiance</option>
+                        {venueAmbiances.map((amb) => (
+                          <option key={amb} value={amb}>{amb}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue Location Type <span className="text-red-500">*</span></label>
+                      <select
+                        value={formData.venueLocationType}
+                        onChange={(e) => handleInputChange("venueLocationType", e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        required
+                      >
+                        <option value="">Select location type</option>
+                        {venueLocationTypes.map((loc) => (
+                          <option key={loc} value={loc}>{loc}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price Category <span className="text-red-500">*</span></label>
+                      <select
+                        value={formData.priceCategory}
+                        onChange={(e) => handleInputChange("priceCategory", e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        required
+                      >
+                        <option value="">Select price category</option>
+                        {priceCategories.map((cat) => (
+                          <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+              {/* Sidebar */}
+              <div className="space-y-6">
                 {/* Date & Time */}
                 <Card className="p-6">
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
@@ -251,9 +474,9 @@ const CreateEvent: React.FC = () => {
                       </label>
                       <input
                         type="datetime-local"
-                        value={formData.date}
+                        value={formData.startDate}
                         onChange={(e) =>
-                          handleInputChange("date", e.target.value)
+                          handleInputChange("startDate", e.target.value)
                         }
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-1 focus:ring-primary-500 dark:focus:ring-primary-400 focus:outline-none transition-colors duration-200"
                         required
@@ -274,8 +497,7 @@ const CreateEvent: React.FC = () => {
                     </div>
                   </div>
                 </Card>
-
-                {/* Location */}
+                {/* City and Venue */}
                 <Card className="p-6">
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                     <MapPin className="h-5 w-5 mr-2 text-primary-600 dark:text-primary-400" />
@@ -283,51 +505,33 @@ const CreateEvent: React.FC = () => {
                   </h2>
                   <div className="space-y-4">
                     <Input
-                      label="City, State/Country"
-                      value={formData.location}
-                      onChange={(e) =>
-                        handleInputChange("location", e.target.value)
-                      }
-                      placeholder="e.g., Kathmandu, Nepal"
-                      icon={MapPin}
+                      label="City"
+                      value={formData.city}
+                      onChange={(e) => handleInputChange("city", e.target.value)}
+                      placeholder="Enter city"
                       required
                     />
-                    <Input
-                      label="Venue Name"
-                      value={formData.venue}
-                      onChange={(e) =>
-                        handleInputChange("venue", e.target.value)
-                      }
-                      placeholder="e.g., Convention Center"
-                      required
-                    />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue Name <span className="text-red-500">*</span></label>
+                      <select
+                        value={formData.venue}
+                        onChange={(e) => handleInputChange("venue", e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        required
+                      >
+                        <option value="">Select a venue</option>
+                        {venues.map((venue) => (
+                          <option key={venue.name} value={venue.name}>{venue.name}</option>
+                        ))}
+                      </select>
+                      {formData.venue && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                          {venues.find((v) => v.name === formData.venue)?.address}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </Card>
-              </div>
-
-              {/* Sidebar */}
-              <div className="space-y-6">
-                {/* Event Creation Fee Notice */}
-                <Card className="p-6 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-200 dark:border-yellow-800">
-                  <div className="flex items-center mb-3">
-                    <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mr-2" />
-                    <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-300">
-                      Event Creation Fee
-                    </h3>
-                  </div>
-                  <p className="text-sm text-yellow-700 dark:text-yellow-400 mb-3">
-                    A one-time fee of{" "}
-                    <strong>NPR {eventCreationFee.toLocaleString()}</strong> is
-                    required to publish your event on Planora.
-                  </p>
-                  <ul className="text-xs text-yellow-600 dark:text-yellow-500 space-y-1">
-                    <li>• Event promotion on our platform</li>
-                    <li>• Analytics and reporting tools</li>
-                    <li>• Customer support</li>
-                    <li>• Secure payment processing</li>
-                  </ul>
-                </Card>
-
                 {/* Pricing & Capacity */}
                 <Card className="p-6">
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
@@ -338,28 +542,23 @@ const CreateEvent: React.FC = () => {
                     <Input
                       label="Ticket Price (NPR)"
                       type="number"
-                      value={formData.price}
-                      onChange={(e) =>
-                        handleInputChange("price", e.target.value)
-                      }
+                      value={formData.ticketPrice}
+                      onChange={(e) => handleInputChange("ticketPrice", e.target.value)}
                       placeholder="0"
                       icon={DollarSign}
                       required
                     />
                     <Input
-                      label="Capacity"
+                      label="Maximum Attendees"
                       type="number"
-                      value={formData.capacity}
-                      onChange={(e) =>
-                        handleInputChange("capacity", e.target.value)
-                      }
+                      value={formData.maxAttendees}
+                      onChange={(e) => handleInputChange("maxAttendees", e.target.value)}
                       placeholder="Maximum attendees"
                       icon={Users}
                       required
                     />
                   </div>
                 </Card>
-
                 {/* Event Image */}
                 <Card className="p-6">
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
@@ -368,8 +567,8 @@ const CreateEvent: React.FC = () => {
                   </h2>
                   <Input
                     label="Image URL"
-                    value={formData.image}
-                    onChange={(e) => handleInputChange("image", e.target.value)}
+                    value={formData.imageUrl}
+                    onChange={(e) => handleInputChange("imageUrl", e.target.value)}
                     placeholder="https://example.com/image.jpg"
                     icon={Image}
                   />
@@ -377,7 +576,6 @@ const CreateEvent: React.FC = () => {
                     Leave empty to use a default image
                   </p>
                 </Card>
-
                 {/* Actions */}
                 <Card className="p-6">
                   <div className="space-y-3">
@@ -386,16 +584,14 @@ const CreateEvent: React.FC = () => {
                         {error}
                       </div>
                     )}
-
                     <Button
                       type="submit"
                       className="w-full"
                       loading={isLoading}
                       icon={Save}
                     >
-                      Pay NPR {eventCreationFee.toLocaleString()} & Create Event
+                      {isEditing ? "Save Changes" : "Create Event"}
                     </Button>
-
                     <Button
                       type="button"
                       variant="outline"
@@ -406,7 +602,6 @@ const CreateEvent: React.FC = () => {
                     </Button>
                   </div>
                 </Card>
-
                 {/* Tips */}
                 <Card className="p-6 bg-gradient-to-r from-primary-50 to-secondary-50 dark:from-primary-900/20 dark:to-secondary-900/20 border-primary-200 dark:border-primary-800">
                   <h3 className="text-sm font-semibold text-primary-900 dark:text-primary-300 mb-2 flex items-center">
@@ -428,13 +623,7 @@ const CreateEvent: React.FC = () => {
       </div>
 
       {/* Payment Modal */}
-      <PaymentModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        amount={eventCreationFee}
-        purpose="event_creation"
-        onSuccess={handlePaymentSuccess}
-      />
+      {/* Removed PaymentModal */}
     </>
   );
 };

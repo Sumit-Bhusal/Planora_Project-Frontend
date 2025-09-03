@@ -42,9 +42,17 @@ export interface Event {
   description: string;
   startDate: string;
   endDate: string;
-  location: string;
-  price: string;
+  city: string;
+  venue: string;
+  venueType: string;
+  venueSuitability: string[];
+  venueCapacity: string;
+  venueAmbiance: string;
+  venueLocationType: string;
+  ticketPrice: number;
+  priceCategory: string;
   category: string;
+  tags: string[];
   maxAttendees: number;
   currentAttendees: number;
   organizer: {
