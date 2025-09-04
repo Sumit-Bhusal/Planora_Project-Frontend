@@ -35,11 +35,14 @@ const EventCard: React.FC<EventCardProps> = ({
   onViewAnalytics,
   onShare,
   showActions = true,
-  variant = "user",
+  variant,
 }) => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const { deleteEvent, setEditingEvent, startEditingEvent } = useEvents();
   const navigate = useNavigate();
+  
+  // Default to user variant if not specified
+  const cardVariant = variant || "user";
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -81,7 +84,7 @@ const EventCard: React.FC<EventCardProps> = ({
     <>
       <Card
         className={`overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 ${
-          variant === "organizer"
+          cardVariant === "organizer"
             ? "border-primary-200 dark:border-primary-700"
             : ""
         }`}
@@ -109,7 +112,7 @@ const EventCard: React.FC<EventCardProps> = ({
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white line-clamp-2">
               {event.title}
             </h3>
-            {variant === "organizer" && (
+            {cardVariant === "organizer" && (
               <div className="flex items-center space-x-1 text-sm text-gray-500 dark:text-gray-400">
                 <Users className="h-4 w-4" />
                 <span>
@@ -138,12 +141,12 @@ const EventCard: React.FC<EventCardProps> = ({
             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
               <Users className="h-4 w-4 mr-2 text-primary-500 dark:text-primary-400" />
               <span className={getAvailabilityColor()}>
-                {variant === "organizer"
+                {cardVariant === "organizer"
                   ? `${event.currentAttendees} registered`
                   : `${event.maxAttendees - event.currentAttendees} spots left`}
               </span>
             </div>
-            {variant === "organizer" && (
+            {cardVariant === "organizer" && (
               <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                 <DollarSign className="h-4 w-4 mr-2 text-primary-500 dark:text-primary-400" />
                 <span>
@@ -155,7 +158,7 @@ const EventCard: React.FC<EventCardProps> = ({
 
           {showActions && (
             <div className="flex space-x-2">
-              {variant === "user" ? (
+              {cardVariant === "user" ? (
                 <Button
                   onClick={handleRegisterClick}
                   className="flex-1 transform hover:scale-105 transition-all"

@@ -1,28 +1,43 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
-  // Filter,
-  // Calendar,
-  // MapPin,
-  // DollarSign,
   SlidersHorizontal,
+  Sparkles,
+  Star,
+  TrendingUp,
 } from "lucide-react";
 import { useEvents } from "../../contexts/EventContext";
 import { useAuth } from "../../contexts/AuthContext";
+import { useCF } from "../../contexts/CFContext";
+import { useNotification } from "../../contexts/NotificationContext";
 import EventCard from "../../components/Events/EventCard";
 import Input from "../../components/UI/Input";
 import Button from "../../components/UI/Button";
 import Card from "../../components/UI/Card";
 
 const EventList: React.FC = () => {
-  const { events, searchEvents, registerForEvent, organizerEvents } =
-    useEvents();
+  const { events, searchEvents, registerForEvent } = useEvents();
   const { user } = useAuth();
+  const { addNotification } = useNotification();
+  const {
+    recommendations,
+    isLoading: mlLoading,
+    trackView,
+    trackRegistration,
+    getAttendanceScore,
+  } = useCF();
+
+  // Keep all existing state
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
-  const [sortBy, setSortBy] = useState<"date" | "price" | "popularity">("date");
+  const [sortBy, setSortBy] = useState<
+    "date" | "price" | "popularity" | "relevance"
+  >("relevance");
   const [showFilters, setShowFilters] = useState(false);
+  const [relevanceScores, setRelevanceScores] = useState<{
+    [key: string]: number;
+  }>({});
 
   const categories = [
     "Technology",
@@ -33,28 +48,32 @@ const EventList: React.FC = () => {
     "Education",
   ];
 
+  // Enhanced filtering with relevance
   const filteredAndSortedEvents = useMemo(() => {
     let filtered = searchQuery
       ? searchEvents(searchQuery, { category: selectedCategory })
       : events;
 
-    // Apply category filter
     if (selectedCategory) {
       filtered = filtered.filter(
         (event) => event.category === selectedCategory
       );
     }
 
-    // Apply price filter
     filtered = filtered.filter(
       (event) =>
         Number(event.ticketPrice) >= priceRange[0] &&
         Number(event.ticketPrice) <= priceRange[1]
     );
 
-    // Sort events
+    // Enhanced sorting with relevance
     filtered.sort((a, b) => {
       switch (sortBy) {
+        case "relevance":
+          const scoreA = relevanceScores[a.id] || 0;
+          const scoreB = relevanceScores[b.id] || 0;
+          if (scoreA !== scoreB) return scoreB - scoreA; // Higher relevance first
+          return (b.currentAttendees ?? 0) - (a.currentAttendees ?? 0); // Fallback to popularity
         case "date":
           return (
             new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
@@ -69,13 +88,81 @@ const EventList: React.FC = () => {
     });
 
     return filtered;
-  }, [events, searchQuery, selectedCategory, priceRange, sortBy, searchEvents]);
+  }, [
+    events,
+    searchQuery,
+    selectedCategory,
+    priceRange,
+    sortBy,
+    searchEvents,
+    relevanceScores,
+  ]);
 
-  const handleRegister = (eventId: string) => {
+  // Enhanced register function
+  const handleRegister = async (eventId: string) => {
     if (user) {
       registerForEvent(eventId);
+      await trackRegistration(eventId);
+
+      addNotification({
+        type: "success",
+        title: "Registration Successful!",
+        message: "We'll keep improving your event suggestions",
+      });
     }
   };
+
+  // Load relevance scores for visible events
+  const loadRelevanceScores = async () => {
+    if (user) {
+      const visibleEvents = filteredAndSortedEvents.slice(0, 12);
+      const scores: { [key: string]: number } = {};
+
+      await Promise.all(
+        visibleEvents.map(async (event) => {
+          const score = await getAttendanceScore(event.id);
+          if (score !== null) {
+            scores[event.id] = score;
+          }
+        })
+      );
+
+      setRelevanceScores(scores);
+    }
+  };
+
+  // Track views with intersection observer
+  useEffect(() => {
+    if (!user) return;
+
+    const observers = new Map();
+
+    filteredAndSortedEvents.slice(0, 6).forEach((event) => {
+      const element = document.getElementById(`event-${event.id}`);
+      if (element && !observers.has(event.id)) {
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (entry.isIntersecting) {
+              trackView(event.id);
+              observer.disconnect();
+              observers.delete(event.id);
+            }
+          },
+          { threshold: 0.5 }
+        );
+        observer.observe(element);
+        observers.set(event.id, observer);
+      }
+    });
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect());
+    };
+  }, [filteredAndSortedEvents, user, trackView]);
+
+  useEffect(() => {
+    loadRelevanceScores();
+  }, [filteredAndSortedEvents, user]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary transition-colors duration-300">
@@ -90,10 +177,44 @@ const EventList: React.FC = () => {
           </p>
         </div>
 
-        {/* Search and Filters */}
+        {/* Show personalized picks if user is logged in and has recommendations */}
+        {user && recommendations.length > 0 && (
+          <Card className="p-6 mb-8 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border-purple-200 dark:border-purple-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-dark-text-primary mb-4 flex items-center">
+              <Star className="h-5 w-5 mr-2 text-yellow-500" />
+              Picked Just for You
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              {recommendations.slice(0, 4).map((event) => (
+                <div
+                  key={event.id}
+                  className="relative bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm"
+                >
+                  <h4 className="font-medium text-sm text-gray-900 dark:text-gray-100 mb-1">
+                    {event.title}
+                  </h4>
+                  <p className="text-xs text-gray-600 dark:text-gray-300 mb-2">
+                    {event.category}
+                  </p>
+                  <Button
+                    size="sm"
+                    className="w-full bg-gradient-to-r from-purple-500 to-blue-500"
+                    onClick={() => handleRegister(event.id)}
+                  >
+                    View Details
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-300 text-center">
+              These events match your interests and attendance patterns
+            </p>
+          </Card>
+        )}
+
+        {/* Search and Filters - keep exactly as is */}
         <Card className="p-6 mb-8">
           <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
             <div className="flex-1">
               <Input
                 placeholder="Search events, topics, or organizers..."
@@ -102,8 +223,6 @@ const EventList: React.FC = () => {
                 icon={Search}
               />
             </div>
-
-            {/* Quick Filters */}
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -114,23 +233,21 @@ const EventList: React.FC = () => {
               </Button>
               <select
                 value={sortBy}
-                onChange={(e) =>
-                  setSortBy(e.target.value as "date" | "price" | "popularity")
-                }
+                onChange={(e) => setSortBy(e.target.value as any)}
                 className="px-4 py-2 border border-gray-300 dark:border-dark-border-primary rounded-lg bg-white dark:bg-dark-bg-tertiary text-gray-900 dark:text-dark-text-primary focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:border-primary-500 dark:focus:border-primary-400 transition-colors"
               >
+                {user && <option value="relevance">Best Match</option>}
                 <option value="date">Sort by Date</option>
                 <option value="price">Sort by Price</option>
-                <option value="popularity">Sort by Popularity</option>
+                <option value="popularity">Most Popular</option>
               </select>
             </div>
           </div>
 
-          {/* Expanded Filters */}
+          {/* Keep existing filters */}
           {showFilters && (
             <div className="mt-6 pt-6 border-t border-gray-200 dark:border-dark-border-primary">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Category Filter */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-2">
                     Category
@@ -149,7 +266,6 @@ const EventList: React.FC = () => {
                   </select>
                 </div>
 
-                {/* Price Range */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-2">
                     Price Range
@@ -179,7 +295,6 @@ const EventList: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Clear Filters */}
                 <div className="flex items-end">
                   <Button
                     variant="outline"
@@ -198,7 +313,7 @@ const EventList: React.FC = () => {
           )}
         </Card>
 
-        {/* Category Pills */}
+        {/* Keep existing category pills */}
         <div className="flex flex-wrap gap-3 mb-8">
           <button
             onClick={() => setSelectedCategory("")}
@@ -225,7 +340,7 @@ const EventList: React.FC = () => {
           ))}
         </div>
 
-        {/* Results Header */}
+        {/* Results header */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-gray-600 dark:text-dark-text-secondary">
             Showing {filteredAndSortedEvents.length} events
@@ -239,21 +354,46 @@ const EventList: React.FC = () => {
                 &quot;
               </span>
             )}
+            {user && sortBy === "relevance" && (
+              <span className="text-purple-600 dark:text-purple-400 ml-2">
+                • Sorted by relevance to you
+              </span>
+            )}
           </p>
         </div>
 
         {/* Events Grid */}
-        {organizerEvents.length > 0 ? (
+        {filteredAndSortedEvents.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {organizerEvents.map((event) => (
-              <EventCard
-                key={event.id}
-                event={event}
-                variant="organizer"
-                onRegister={() => handleRegister(event.id)}
-                showActions={!!user}
-              />
-            ))}
+            {filteredAndSortedEvents.map((event) => {
+              const relevanceScore = relevanceScores[event.id];
+              const isHighMatch = relevanceScore && relevanceScore > 0.7;
+
+              return (
+                <div key={event.id} className="relative">
+                  <div id={`event-${event.id}`}>
+                    <EventCard
+                      event={event}
+                      variant={user?.role === "organizer" ? "organizer" : "user"}
+                      onRegister={() => handleRegister(event.id)}
+                      showActions={!!user}
+                    />
+                  </div>
+                  {/* Natural indicators - no technical jargon */}
+                  {user && isHighMatch && (
+                    <div className="absolute top-2 right-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                      Great Match
+                    </div>
+                  )}
+                  {user && relevanceScore && relevanceScore > 0.8 && (
+                    <div className="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-2 py-1 rounded-full font-medium flex items-center">
+                      <TrendingUp className="h-3 w-3 mr-1" />
+                      Hot Pick
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         ) : (
           <Card className="p-12 text-center">
