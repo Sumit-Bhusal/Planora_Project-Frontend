@@ -338,18 +338,35 @@ const EventList: React.FC = () => {
         {/* Events Grid */}
         {filteredAndSortedEvents.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAndSortedEvents.map((event) => (
-              <div key={event.id} className="relative">
-                <div id={`event-${event.id}`}>
-                  <EventCard
-                    event={event}
-                    variant={user?.role === "organizer" ? "organizer" : "user"}
-                    onRegister={() => handleRegister(event.id)}
-                    showActions={!!user}
-                  />
+            {filteredAndSortedEvents.map((event) => {
+              // Determine variant and actions based on user role and ownership
+              const isEventOwner = user?.role === "organizer" && event.organizer?.id === user.id;
+              const isOrganizer = user?.role === "organizer";
+              
+              // Organizers can only manage their own events, no registration
+              // Users can register for any event
+              let variant: "user" | "organizer" = "user";
+              let showActions = !!user;
+              
+              if (isEventOwner) {
+                variant = "organizer"; // Show edit/delete for owned events
+              } else if (isOrganizer) {
+                showActions = false; // Organizers can't register for other events, show read-only
+              }
+              
+              return (
+                <div key={event.id} className="relative">
+                  <div id={`event-${event.id}`}>
+                    <EventCard
+                      event={event}
+                      variant={variant}
+                      onRegister={() => handleRegister(event.id)}
+                      showActions={showActions}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <Card className="p-12 text-center">

@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { useEvents } from "../../contexts/EventContext";
 import { registerForEvent } from "../../actions/event/event";
 import { useAuth } from "../../contexts/AuthContext";
+import { useNotification } from "../../contexts/NotificationContext";
 
 interface EventCardProps {
   event: Event;
@@ -39,6 +40,7 @@ const EventCard: React.FC<EventCardProps> = ({
   // Remove booking modal state
   const { deleteEvent, startEditingEvent } = useEvents();
   const { setPaymentData } = useAuth();
+  const { addNotification } = useNotification();
   const navigate = useNavigate();
 
   // Default to user variant if not specified
@@ -64,20 +66,37 @@ const EventCard: React.FC<EventCardProps> = ({
   };
 
   const handleRegisterClick = async () => {
-    const response = await registerForEvent(event.id);
-    if (response) {
-      setPaymentData({
-        participationId: response.id,
-        amount: event.ticketPrice ?? 0,
-        currency: "npr",
-        paymentMethod: "esewa",
-        signature: "",
-        signedFields: "",
-        transactionUUID: "",
+    try {
+      const response = await registerForEvent(event.id);
+      if (response) {
+        setPaymentData({
+          participationId: response.id,
+          amount: event.ticketPrice ?? 0,
+          currency: "npr",
+          paymentMethod: "esewa",
+          signature: "",
+          signedFields: "",
+          transactionUUID: "",
+        });
+        
+        addNotification({
+          type: 'success',
+          title: 'Registration Started',
+          message: 'Proceeding to payment...'
+        });
+        
+        navigate("/events/register", { state: { event } });
+      } else {
+        navigate("/events");
+      }
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      
+      addNotification({
+        type: 'error',
+        title: 'Registration Failed',
+        message: error.message || 'Failed to register for event'
       });
-      navigate("/events/register", { state: { event } });
-    } else {
-      navigate("/events");
     }
   };
 

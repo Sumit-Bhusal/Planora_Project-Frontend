@@ -66,26 +66,38 @@ const RegisterEventPage: React.FC = () => {
     "https://images.pexels.com/photos/2608517/pexels-photo-2608517.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
 
   const handleProceedToPayment = async () => {
-    const data: PaymentData = {
-      amount: event.price,
-      paymentMethod: "esewa",
-      participationId: paymentData.participationId,
-      currency: "npr",
-    };
-    const response = await makePayment(event.id, data);
-    console.log(response);
-    if (response && response.status === "success") {
-      setPaymentData({
-        signature: response.data?.signature!,
-        signedFields: response.data?.signedFields!,
-        transactionUUID: response.data?.Payment.transactionUUID!,
+    try {
+      const data: PaymentData = {
         amount: event.price,
-        currency: "npr",
         paymentMethod: "esewa",
-        participationId: response.data?.Payment.participationId!,
-      });
+        participationId: paymentData.participationId || "", // Fallback to empty string
+        currency: "npr",
+      };
+      
+      console.log("Payment data being sent:", data);
+      
+      const response = await makePayment(event.id, data);
+      console.log("Payment response:", response);
+      
+      if (response && response.status === "success") {
+        setPaymentData({
+          signature: response.data?.signature!,
+          signedFields: response.data?.signedFields!,
+          transactionUUID: response.data?.Payment.transactionUUID!,
+          amount: event.price,
+          currency: "npr",
+          paymentMethod: "esewa",
+          participationId: response.data?.Payment.participationId!,
+        });
+        setShowPaymentModal(true);
+      } else {
+        console.error("Payment initiation failed:", response);
+        // You could add error handling here, like showing a notification
+      }
+    } catch (error) {
+      console.error("Error in handleProceedToPayment:", error);
+      // You could add error handling here as well
     }
-    setShowPaymentModal(true);
   };
 
   return (

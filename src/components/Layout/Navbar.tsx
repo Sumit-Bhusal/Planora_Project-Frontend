@@ -106,7 +106,7 @@ const Navbar: React.FC = () => {
                     >
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4" />
-                        <span>My Events</span>
+                        <span>Browse Events</span>
                       </div>
                     </Link>
                     <Link
@@ -319,7 +319,7 @@ const Navbar: React.FC = () => {
                     >
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4" />
-                        <span>My Events</span>
+                        <span>Browse Events</span>
                       </div>
                     </Link>
                     <Link
