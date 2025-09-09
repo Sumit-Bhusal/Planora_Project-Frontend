@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, MapPin, User, DollarSign, Download, X, AlertTriangle, Search, Filter, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, MapPin, User, DollarSign, Download, X, AlertTriangle, Search, Filter, Clock, CheckCircle, XCircle, Star } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTickets, UserTicket } from '../contexts/TicketContext';
 import Card from '../components/UI/Card';
@@ -7,6 +7,7 @@ import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import TicketDownload from '../components/Tickets/TicketDownload';
 import TicketCancellationModal from '../components/Tickets/TicketCancellationModal';
+import FeedbackForm from '../components/Events/FeedbackForm';
 
 const UserTickets: React.FC = () => {
   const { user } = useAuth();
@@ -15,6 +16,7 @@ const UserTickets: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'cancelled' | 'used'>('all');
   const [showTicketDownload, setShowTicketDownload] = useState(false);
   const [showCancellationModal, setShowCancellationModal] = useState(false);
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<UserTicket | null>(null);
 
   const filteredTickets = userTickets.filter(ticket => {
@@ -262,10 +264,23 @@ const UserTickets: React.FC = () => {
                       </div>
                     )}
                     {ticket.status === 'used' && (
-                      <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                        <CheckCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mx-auto mb-1" />
-                        <p className="text-xs text-blue-600 dark:text-blue-400">Used</p>
-                      </div>
+                      <>
+                        <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg mb-2">
+                          <CheckCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mx-auto mb-1" />
+                          <p className="text-xs text-blue-600 dark:text-blue-400">Attended</p>
+                        </div>
+                        <Button
+                          onClick={() => {
+                            setSelectedTicket(ticket);
+                            setShowFeedbackForm(true);
+                          }}
+                          icon={Star}
+                          variant="outline"
+                          className="w-full lg:w-auto text-yellow-600 dark:text-yellow-400 border-yellow-300 dark:border-yellow-700 hover:bg-yellow-50 dark:hover:bg-yellow-900/30"
+                        >
+                          Leave Review
+                        </Button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -340,6 +355,26 @@ const UserTickets: React.FC = () => {
           }}
           onCancellationComplete={handleCancellationComplete}
         />
+      )}
+
+      {/* Feedback Form Modal */}
+      {showFeedbackForm && selectedTicket && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <FeedbackForm
+              eventId={selectedTicket.eventId}
+              eventTitle={selectedTicket.eventTitle}
+              onSuccess={() => {
+                setShowFeedbackForm(false);
+                setSelectedTicket(null);
+              }}
+              onCancel={() => {
+                setShowFeedbackForm(false);
+                setSelectedTicket(null);
+              }}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

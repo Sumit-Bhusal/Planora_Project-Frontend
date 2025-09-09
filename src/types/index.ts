@@ -78,9 +78,11 @@ export interface Ticket {
 
 export interface EventAnalytics {
   eventId: string;
+  eventTitle?: string;
   totalRegistrations: number;
   totalRevenue: number;
   attendanceRate: number;
+  attendedCount?: number;
   demographicData: {
     ageGroups: Record<string, number>;
     locations: Record<string, number>;

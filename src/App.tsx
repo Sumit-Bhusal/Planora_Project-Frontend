@@ -24,6 +24,7 @@ import UserTickets from "./pages/UserTickets";
 import RegisterEventPage from "./pages/Events/RegisterEventPage";
 import SuccessPage from "./components/Payment/SuccessPage";
 import FailedPage from "./components/Payment/FailedPage";
+import MLSystemManager from "./components/Admin/MLSystemManager";
 import { useAuth } from "./contexts/AuthContext";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
@@ -88,6 +89,14 @@ const AppContent: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <UserTickets />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/ml-system"
+              element={
+                <ProtectedRoute>
+                  <MLSystemManager />
                 </ProtectedRoute>
               }
             />
