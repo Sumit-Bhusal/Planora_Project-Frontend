@@ -1,11 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import {
-  Search,
-  SlidersHorizontal,
-  Sparkles,
-  Star,
-  TrendingUp,
-} from "lucide-react";
+import { Search, SlidersHorizontal, Star } from "lucide-react";
 import { useEvents } from "../../contexts/EventContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { useCF } from "../../contexts/CFContext";
@@ -19,13 +13,7 @@ const EventList: React.FC = () => {
   const { events, searchEvents, registerForEvent } = useEvents();
   const { user } = useAuth();
   const { addNotification } = useNotification();
-  const {
-    recommendations,
-    isLoading: mlLoading,
-    trackView,
-    trackRegistration,
-    getAttendanceScore,
-  } = useCF();
+  const { recommendations, trackView, trackRegistration } = useCF();
 
   // Keep all existing state
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,9 +23,7 @@ const EventList: React.FC = () => {
     "date" | "price" | "popularity" | "relevance"
   >("relevance");
   const [showFilters, setShowFilters] = useState(false);
-  const [relevanceScores, setRelevanceScores] = useState<{
-    [key: string]: number;
-  }>({});
+  // Removed relevanceScores state
 
   const categories = [
     "Technology",
@@ -48,32 +34,45 @@ const EventList: React.FC = () => {
     "Education",
   ];
 
-  // Enhanced filtering with relevance
+  // Filtering and sorting without relevance
   const filteredAndSortedEvents = useMemo(() => {
-    let filtered = searchQuery
-      ? searchEvents(searchQuery, { category: selectedCategory })
-      : events;
+    let filtered = events;
 
+    // Only apply search if there is a query
+    if (searchQuery) {
+      filtered = searchEvents(searchQuery, { category: selectedCategory });
+    }
+
+    // Only apply category filter if selected
     if (selectedCategory) {
       filtered = filtered.filter(
         (event) => event.category === selectedCategory
       );
     }
 
-    filtered = filtered.filter(
-      (event) =>
-        Number(event.ticketPrice) >= priceRange[0] &&
-        Number(event.ticketPrice) <= priceRange[1]
-    );
+    // Only apply price filter if user changed it from default
+    const isDefaultPrice = priceRange[0] === 0 && priceRange[1] === 1000;
+    if (!isDefaultPrice) {
+      filtered = filtered.filter((event) => {
+        const price = event.ticketPrice;
+        if (typeof price === "string") {
+          if ((price as string).toLowerCase() === "free") return true;
+          const priceNum = Number(price);
+          return (
+            !isNaN(priceNum) &&
+            priceNum >= priceRange[0] &&
+            priceNum <= priceRange[1]
+          );
+        }
+        if (typeof price === "number") {
+          return price >= priceRange[0] && price <= priceRange[1];
+        }
+        return false;
+      });
+    }
 
-    // Enhanced sorting with relevance
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case "relevance":
-          const scoreA = relevanceScores[a.id] || 0;
-          const scoreB = relevanceScores[b.id] || 0;
-          if (scoreA !== scoreB) return scoreB - scoreA; // Higher relevance first
-          return (b.currentAttendees ?? 0) - (a.currentAttendees ?? 0); // Fallback to popularity
         case "date":
           return (
             new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
@@ -88,15 +87,7 @@ const EventList: React.FC = () => {
     });
 
     return filtered;
-  }, [
-    events,
-    searchQuery,
-    selectedCategory,
-    priceRange,
-    sortBy,
-    searchEvents,
-    relevanceScores,
-  ]);
+  }, [events, searchQuery, selectedCategory, priceRange, sortBy, searchEvents]);
 
   // Enhanced register function
   const handleRegister = async (eventId: string) => {
@@ -112,24 +103,7 @@ const EventList: React.FC = () => {
     }
   };
 
-  // Load relevance scores for visible events
-  const loadRelevanceScores = async () => {
-    if (user) {
-      const visibleEvents = filteredAndSortedEvents.slice(0, 12);
-      const scores: { [key: string]: number } = {};
-
-      await Promise.all(
-        visibleEvents.map(async (event) => {
-          const score = await getAttendanceScore(event.id);
-          if (score !== null) {
-            scores[event.id] = score;
-          }
-        })
-      );
-
-      setRelevanceScores(scores);
-    }
-  };
+  // Removed loadRelevanceScores
 
   // Track views with intersection observer
   useEffect(() => {
@@ -160,9 +134,7 @@ const EventList: React.FC = () => {
     };
   }, [filteredAndSortedEvents, user, trackView]);
 
-  useEffect(() => {
-    loadRelevanceScores();
-  }, [filteredAndSortedEvents, user]);
+  // Removed useEffect for relevance scores
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-dark-bg-primary transition-colors duration-300">
@@ -366,31 +338,31 @@ const EventList: React.FC = () => {
         {filteredAndSortedEvents.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAndSortedEvents.map((event) => {
-              const relevanceScore = relevanceScores[event.id];
-              const isHighMatch = relevanceScore && relevanceScore > 0.7;
-
+              // Determine variant and actions based on user role and ownership
+              const isEventOwner = user?.role === "organizer" && event.organizer?.id === user.id;
+              const isOrganizer = user?.role === "organizer";
+              
+              // Organizers can only manage their own events, no registration
+              // Users can register for any event
+              let variant: "user" | "organizer" = "user";
+              let showActions = !!user;
+              
+              if (isEventOwner) {
+                variant = "organizer"; // Show edit/delete for owned events
+              } else if (isOrganizer) {
+                showActions = false; // Organizers can't register for other events, show read-only
+              }
+              
               return (
                 <div key={event.id} className="relative">
                   <div id={`event-${event.id}`}>
                     <EventCard
                       event={event}
-                      variant={user?.role === "organizer" ? "organizer" : "user"}
+                      variant={variant}
                       onRegister={() => handleRegister(event.id)}
-                      showActions={!!user}
+                      showActions={showActions}
                     />
                   </div>
-                  {/* Natural indicators - no technical jargon */}
-                  {user && isHighMatch && (
-                    <div className="absolute top-2 right-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                      Great Match
-                    </div>
-                  )}
-                  {user && relevanceScore && relevanceScore > 0.8 && (
-                    <div className="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-2 py-1 rounded-full font-medium flex items-center">
-                      <TrendingUp className="h-3 w-3 mr-1" />
-                      Hot Pick
-                    </div>
-                  )}
                 </div>
               );
             })}

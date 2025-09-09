@@ -20,3 +20,15 @@ export interface EventDetails {
   updatedAt: string;
   imageUrl?: string | null;
 }
+
+export interface RegisterResponse {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  userId: string;
+  eventId: string;
+  status: "registered" | "cancelled" | "confirmed";
+  registrationDate: string;
+  isAttended: boolean;
+  notes?: string | null;
+}

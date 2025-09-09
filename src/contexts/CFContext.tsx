@@ -13,6 +13,9 @@ interface CFContextType {
   trackRegistration: (eventId: string) => Promise<void>;
   predictEventAttendance: (eventIds: string[]) => Promise<cfApi.AttendancePrediction[]>;
   compareModels: () => Promise<any>;
+  triggerDataSync: () => Promise<any>;
+  getSystemHealth: () => Promise<any>;
+  getDataStats: () => Promise<any>;
 }
 
 const CFContext = createContext<CFContextType | undefined>(undefined);
@@ -77,6 +80,37 @@ export const CFProvider: React.FC<{ children: React.ReactNode }> = ({ children }
     return cfApi.compareModels(5);
   };
 
+  const triggerDataSync = async () => {
+    try {
+      const result = await cfApi.triggerDataSync();
+      if (result.success) {
+        addNotification({
+          type: 'success',
+          title: 'Data Sync Initiated',
+          message: 'ML models are being updated with latest data'
+        });
+        // Reload recommendations after sync
+        setTimeout(loadRecommendations, 5000);
+      }
+      return result;
+    } catch (error) {
+      addNotification({
+        type: 'error',
+        title: 'Sync Failed',
+        message: 'Failed to sync data with ML models'
+      });
+      return null;
+    }
+  };
+
+  const getSystemHealth = async () => {
+    return cfApi.getSystemHealth();
+  };
+
+  const getDataStats = async () => {
+    return cfApi.getDataStats();
+  };
+
   useEffect(() => {
     if (user) {
       loadRecommendations();
@@ -93,7 +127,10 @@ export const CFProvider: React.FC<{ children: React.ReactNode }> = ({ children }
       trackView,
       trackRegistration,
       predictEventAttendance,
-      compareModels
+      compareModels,
+      triggerDataSync,
+      getSystemHealth,
+      getDataStats
     }}>
       {children}
     </CFContext.Provider>

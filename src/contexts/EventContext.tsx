@@ -3,6 +3,7 @@ import { Event, EventAnalytics } from "../types";
 import {
   fetchAllEvents,
   fetchEventByOrganizerId,
+  fetchDashboardEvents,
   createEvent as createEventAPI,
   updateEvent as updateEventAPI,
   deleteEvent as deleteEventAPI,
@@ -83,12 +84,19 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
   const fetchOrganizerEvents = async () => {
     const user = await getUserInfo();
     if (user) {
-      const response = await fetchEventByOrganizerId(user.id!);
+      // Use the new dashboard endpoint which will return role-specific events
+      const response = await fetchDashboardEvents();
       if (response && response.status === "success") {
         setOrganizerEvents(response.data);
       } else {
-        setOrganizerEvents([]);
-        console.error("Failed to fetch organizer events:", response?.message);
+        // Fallback to the old method if dashboard endpoint fails
+        const fallbackResponse = await fetchEventByOrganizerId(user.id!);
+        if (fallbackResponse && fallbackResponse.status === "success") {
+          setOrganizerEvents(fallbackResponse.data);
+        } else {
+          setOrganizerEvents([]);
+          console.error("Failed to fetch organizer events:", fallbackResponse?.message);
+        }
       }
     }
   };
@@ -156,6 +164,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
     query: string,
     filters?: { category?: string; date?: Date; location?: string }
   ) => {
+    if (!query) return events;
     return events.filter((event) => {
       const matchesQuery =
         event.title.toLowerCase().includes(query.toLowerCase()) ||

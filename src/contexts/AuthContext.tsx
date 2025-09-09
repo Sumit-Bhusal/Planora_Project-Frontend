@@ -4,6 +4,7 @@ import { registerUserandOrganizer, UserLogin } from "../actions/login/login";
 import { LoginData, RegisterData } from "../types/auth";
 import { decodeToken } from "../helper/decodeToken";
 import { removeCookie, setCookie } from "../lib/cookies";
+import { PaymentDataForPayment } from "../types/payment";
 
 interface AuthContextType {
   user: User | null;
@@ -13,6 +14,8 @@ interface AuthContextType {
   isLoading: boolean;
   register: (data: RegisterData) => Promise<void>;
   Login: (data: LoginData) => Promise<void>;
+  paymentData: PaymentDataForPayment;
+  setPaymentData: React.Dispatch<React.SetStateAction<PaymentDataForPayment>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,6 +33,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [paymentData, setPaymentData] = useState<PaymentDataForPayment>({
+    amount: 0,
+    currency: "npr",
+    paymentMethod: "esewa",
+    participationId: "",
+    signature: "",
+    signedFields: "",
+    transactionUUID: "",
+  });
 
   useEffect(() => {
     // Restore auto-login functionality
@@ -132,6 +144,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         isLoading,
         register,
         Login,
+        paymentData,
+        setPaymentData,
       }}
     >
       {children}
