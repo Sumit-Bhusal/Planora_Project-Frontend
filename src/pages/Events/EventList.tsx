@@ -86,7 +86,6 @@ const EventList: React.FC = () => {
       }
     });
 
-    console.log(filtered);
     return filtered;
   }, [events, searchQuery, selectedCategory, priceRange, sortBy, searchEvents]);
 

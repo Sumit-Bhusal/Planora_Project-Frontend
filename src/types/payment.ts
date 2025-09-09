@@ -55,7 +55,7 @@ export interface PaymentResponse {
   status: "success" | "error";
   data: {
     signature: string;
-    signedFields: string;
+    signedFieldNames: string;
     Payment: Payment;
   } | null;
   message?: string;

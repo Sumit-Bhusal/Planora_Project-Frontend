@@ -49,13 +49,15 @@ export const makePayment = async (
   };
 };
 
-export const verifyPayment = async (paymentId: string, eventId: string) => {
+export const verifyPayment = async (transactionId: string, amount: number) => {
   try {
     const response = await axiosInstance.post(
-      `/payments/verify-payment/${paymentId}/${eventId}`
+      `/payments/verify-payment/${transactionId}/${amount}`
     );
 
-    if (response.status === 200) {
+    console.log(response);
+
+    if (response.status === 201) {
       return {
         status: "success",
         data: response.data,
