@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   Calendar,
   MapPin,
@@ -14,9 +13,10 @@ import {
 import { Event } from "../../types";
 import Card from "../UI/Card";
 import Button from "../UI/Button";
-import TicketBookingModal from "../Tickets/TicketBookingModal";
 import { useNavigate } from "react-router-dom";
 import { useEvents } from "../../contexts/EventContext";
+import { registerForEvent } from "../../actions/event/event";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface EventCardProps {
   event: Event;
@@ -30,17 +30,17 @@ interface EventCardProps {
 
 const EventCard: React.FC<EventCardProps> = ({
   event,
-  onRegister,
   onEdit,
   onViewAnalytics,
   onShare,
   showActions = true,
   variant,
 }) => {
-  const [showBookingModal, setShowBookingModal] = useState(false);
-  const { deleteEvent, setEditingEvent, startEditingEvent } = useEvents();
+  // Remove booking modal state
+  const { deleteEvent, startEditingEvent } = useEvents();
+  const { setPaymentData } = useAuth();
   const navigate = useNavigate();
-  
+
   // Default to user variant if not specified
   const cardVariant = variant || "user";
 
@@ -63,19 +63,30 @@ const EventCard: React.FC<EventCardProps> = ({
     return "text-red-600 dark:text-red-400";
   };
 
-
-  const handleRegisterClick = () => {
-    setShowBookingModal(true);
-  };
-
-  const handleBookingComplete = () => {
-    if (onRegister) {
-      onRegister();
+  const handleRegisterClick = async () => {
+    const response = await registerForEvent(event.id);
+    if (response) {
+      setPaymentData({
+        participationId: response.id,
+        amount: event.ticketPrice ?? 0,
+        currency: "npr",
+        paymentMethod: "esewa",
+        signature: "",
+        signedFields: "",
+        transactionUUID: "",
+      });
+      navigate("/events/register", { state: { event } });
+    } else {
+      navigate("/events");
     }
   };
 
   const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this event? This action cannot be undone."
+      )
+    ) {
       await deleteEvent(event.id);
     }
   };
@@ -101,7 +112,11 @@ const EventCard: React.FC<EventCardProps> = ({
           />
           <div className="absolute top-4 right-4">
             <div className="bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
-              NPR {event.ticketPrice !== undefined && !isNaN(Number(event.ticketPrice)) ? Number(event.ticketPrice).toLocaleString() : ''}
+              NPR{" "}
+              {event.ticketPrice !== undefined &&
+              !isNaN(Number(event.ticketPrice))
+                ? Number(event.ticketPrice).toLocaleString()
+                : ""}
             </div>
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
@@ -129,14 +144,20 @@ const EventCard: React.FC<EventCardProps> = ({
           <div className="space-y-2 mb-4">
             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
               <Calendar className="h-4 w-4 mr-2 text-primary-500 dark:text-primary-400" />
-              <span>{formatDate(new Date(event.startDate))} - {formatDate(new Date(event.endDate))}</span>
+              <span>
+                {formatDate(new Date(event.startDate))} -{" "}
+                {formatDate(new Date(event.endDate))}
+              </span>
             </div>
             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
               <MapPin className="h-4 w-4 mr-2 text-primary-500 dark:text-primary-400" />
-              <span>{event.city}, {event.venue}</span>
+              <span>
+                {event.city}, {event.venue}
+              </span>
             </div>
             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-              <span className="font-semibold mr-1">Venue Type:</span> {event.venueType}
+              <span className="font-semibold mr-1">Venue Type:</span>{" "}
+              {event.venueType}
             </div>
             <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
               <Users className="h-4 w-4 mr-2 text-primary-500 dark:text-primary-400" />
@@ -150,7 +171,16 @@ const EventCard: React.FC<EventCardProps> = ({
               <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                 <DollarSign className="h-4 w-4 mr-2 text-primary-500 dark:text-primary-400" />
                 <span>
-                  Revenue: NPR {event.ticketPrice !== undefined && event.currentAttendees !== undefined && !isNaN(Number(event.ticketPrice)) && !isNaN(Number(event.currentAttendees)) ? (Number(event.currentAttendees) * Number(event.ticketPrice)).toLocaleString() : ''}
+                  Revenue: NPR{" "}
+                  {event.ticketPrice !== undefined &&
+                  event.currentAttendees !== undefined &&
+                  !isNaN(Number(event.ticketPrice)) &&
+                  !isNaN(Number(event.currentAttendees))
+                    ? (
+                        Number(event.currentAttendees) *
+                        Number(event.ticketPrice)
+                      ).toLocaleString()
+                    : ""}
                 </span>
               </div>
             )}
@@ -171,10 +201,14 @@ const EventCard: React.FC<EventCardProps> = ({
               ) : (
                 <div className="flex space-x-2 w-full">
                   <Button
-                    onClick={onEdit ? () => onEdit() : () => {
-                      startEditingEvent(event);
-                      navigate("/create-event");
-                    }}
+                    onClick={
+                      onEdit
+                        ? () => onEdit()
+                        : () => {
+                            startEditingEvent(event);
+                            navigate("/create-event");
+                          }
+                    }
                     variant="outline"
                     size="sm"
                     className="flex-1 transform hover:scale-105 transition-all border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/30"
@@ -215,13 +249,7 @@ const EventCard: React.FC<EventCardProps> = ({
         </div>
       </Card>
 
-      {/* Ticket Booking Modal */}
-      <TicketBookingModal
-        isOpen={showBookingModal}
-        onClose={() => setShowBookingModal(false)}
-        event={event}
-        onBookingComplete={handleBookingComplete}
-      />
+      {/* Removed Ticket Booking Modal for registration redirect */}
     </>
   );
 };

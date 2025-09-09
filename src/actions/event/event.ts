@@ -1,4 +1,5 @@
 import axiosInstance from "../../lib/axiosInstance";
+import { RegisterResponse } from "../../types/event";
 
 export const createEvent = async (data: any) => {
   return axiosInstance.post("/events/create", data);
@@ -73,6 +74,32 @@ export const fetchEventByOrganizerId = async (organizerId: string) => {
       data: null,
       message: "Failed to fetch event due to a network or server error",
     };
+  }
+};
+
+export const registerForEvent = async (
+  eventId: string
+): Promise<RegisterResponse> => {
+  try {
+    const response = await axiosInstance.post(`/participation/${eventId}`);
+
+    if (response.status === 201) {
+      return response.data as RegisterResponse;
+    } else {
+      throw new Error("Failed to register for event");
+    }
+  } catch (error: any) {
+    console.error(error);
+
+    let message =
+      "Failed to register for event due to a network or server error";
+    if (error.response && error.response.data) {
+      const errorData = error.response.data;
+      message = Array.isArray(errorData.error?.message)
+        ? errorData.error.message.join(", ")
+        : errorData.error?.message || message;
+    }
+    throw new Error(message);
   }
 };
 

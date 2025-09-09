@@ -156,6 +156,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
     query: string,
     filters?: { category?: string; date?: Date; location?: string }
   ) => {
+    if (!query) return events;
     return events.filter((event) => {
       const matchesQuery =
         event.title.toLowerCase().includes(query.toLowerCase()) ||
