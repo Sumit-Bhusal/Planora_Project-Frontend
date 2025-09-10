@@ -1,7 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Star, MessageSquare, User, Calendar, ThumbsUp, ThumbsDown, Minus } from 'lucide-react';
-import Card from '../UI/Card';
-import * as feedbackApi from '../../services/api/feedback';
+import React, { useState, useEffect } from "react";
+import {
+  Star,
+  MessageSquare,
+  User,
+  Calendar,
+  ThumbsUp,
+  ThumbsDown,
+  Minus,
+} from "lucide-react";
+import Card from "../UI/Card";
+import * as feedbackApi from "../../services/api/feedback";
 
 interface FeedbackListProps {
   eventId: string;
@@ -15,9 +23,9 @@ interface FeedbackItemProps {
 const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback }) => {
   const getSentimentIcon = (sentiment: string) => {
     switch (sentiment) {
-      case 'positive':
+      case "positive":
         return <ThumbsUp className="h-4 w-4 text-green-500" />;
-      case 'negative':
+      case "negative":
         return <ThumbsDown className="h-4 w-4 text-red-500" />;
       default:
         return <Minus className="h-4 w-4 text-gray-500" />;
@@ -26,12 +34,12 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback }) => {
 
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
-      case 'positive':
-        return 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700';
-      case 'negative':
-        return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-700';
+      case "positive":
+        return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-700";
+      case "negative":
+        return "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-700";
       default:
-        return 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600';
+        return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600";
     }
   };
 
@@ -43,11 +51,11 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback }) => {
             <User className="h-5 w-5 text-primary-600 dark:text-primary-400" />
           </div>
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2 mb-2">
             <span className="text-sm font-medium text-gray-900 dark:text-white">
-              {feedback.user?.name || 'Anonymous User'}
+              {feedback.user?.name || "Anonymous User"}
             </span>
             <div className="flex items-center">
               {[1, 2, 3, 4, 5].map((value) => (
@@ -55,8 +63,8 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback }) => {
                   key={value}
                   className={`h-4 w-4 ${
                     value <= feedback.rating
-                      ? 'text-yellow-400 fill-current'
-                      : 'text-gray-300 dark:text-gray-600'
+                      ? "text-yellow-400 fill-current"
+                      : "text-gray-300 dark:text-gray-600"
                   }`}
                 />
               ))}
@@ -68,19 +76,19 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback }) => {
               </span>
             </span>
           </div>
-          
+
           <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
             {feedback.reviewText}
           </p>
-          
+
           <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
             <Calendar className="h-3 w-3 mr-1" />
-            {new Date(feedback.createdAt).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
+            {new Date(feedback.createdAt).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
             })}
           </div>
         </div>
@@ -89,7 +97,10 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback }) => {
   );
 };
 
-const FeedbackList: React.FC<FeedbackListProps> = ({ eventId, showTitle = true }) => {
+const FeedbackList: React.FC<FeedbackListProps> = ({
+  eventId,
+  showTitle = true,
+}) => {
   const [feedbacks, setFeedbacks] = useState<feedbackApi.Feedback[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -102,8 +113,8 @@ const FeedbackList: React.FC<FeedbackListProps> = ({ eventId, showTitle = true }
         const data = await feedbackApi.getEventFeedbacks(eventId);
         setFeedbacks(data);
       } catch (err) {
-        console.error('Failed to load feedbacks:', err);
-        setError('Failed to load reviews');
+        console.error("Failed to load feedbacks:", err);
+        setError("Failed to load reviews");
       } finally {
         setLoading(false);
       }
@@ -112,9 +123,11 @@ const FeedbackList: React.FC<FeedbackListProps> = ({ eventId, showTitle = true }
     loadFeedbacks();
   }, [eventId]);
 
-  const averageRating = feedbacks.length > 0 
-    ? feedbacks.reduce((sum, feedback) => sum + feedback.rating, 0) / feedbacks.length
-    : 0;
+  const averageRating =
+    feedbacks.length > 0
+      ? feedbacks.reduce((sum, feedback) => sum + feedback.rating, 0) /
+        feedbacks.length
+      : 0;
 
   const sentimentCounts = feedbacks.reduce((counts, feedback) => {
     counts[feedback.sentiment] = (counts[feedback.sentiment] || 0) + 1;
@@ -180,7 +193,7 @@ const FeedbackList: React.FC<FeedbackListProps> = ({ eventId, showTitle = true }
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Reviews & Ratings
             </h3>
-            
+
             <div className="flex items-center space-x-6 mb-4">
               <div className="flex items-center space-x-2">
                 <div className="flex items-center">
@@ -189,8 +202,8 @@ const FeedbackList: React.FC<FeedbackListProps> = ({ eventId, showTitle = true }
                       key={value}
                       className={`h-5 w-5 ${
                         value <= Math.round(averageRating)
-                          ? 'text-yellow-400 fill-current'
-                          : 'text-gray-300 dark:text-gray-600'
+                          ? "text-yellow-400 fill-current"
+                          : "text-gray-300 dark:text-gray-600"
                       }`}
                     />
                   ))}
@@ -199,10 +212,10 @@ const FeedbackList: React.FC<FeedbackListProps> = ({ eventId, showTitle = true }
                   {averageRating.toFixed(1)}
                 </span>
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  ({feedbacks.length} review{feedbacks.length !== 1 ? 's' : ''})
+                  ({feedbacks.length} review{feedbacks.length !== 1 ? "s" : ""})
                 </span>
               </div>
-              
+
               <div className="flex items-center space-x-4 text-sm">
                 <div className="flex items-center space-x-1 text-green-600 dark:text-green-400">
                   <ThumbsUp className="h-4 w-4" />
@@ -220,7 +233,7 @@ const FeedbackList: React.FC<FeedbackListProps> = ({ eventId, showTitle = true }
             </div>
           </div>
         )}
-        
+
         <div className="space-y-4">
           {feedbacks.map((feedback) => (
             <FeedbackItem key={feedback.id} feedback={feedback} />

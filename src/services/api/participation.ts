@@ -4,7 +4,7 @@ export interface Participation {
   id: string;
   userId: string;
   eventId: string;
-  status: 'registered' | 'cancelled' | 'confirmed' | 'attended';
+  status: "registered" | "cancelled" | "confirmed" | "attended";
   registrationDate: string;
   isAttended: boolean;
   notes?: string;
@@ -37,7 +37,7 @@ export interface RegistrationCheck {
 }
 
 export interface UpdateParticipationData {
-  status?: 'registered' | 'cancelled' | 'confirmed' | 'attended';
+  status?: "registered" | "cancelled" | "confirmed" | "attended";
   notes?: string;
   isAttended?: boolean;
 }
@@ -52,13 +52,15 @@ export const participationAPI = {
 
   // Get all participations (admin only)
   getAllParticipations: async (): Promise<Participation[]> => {
-    const response = await axiosInstance.get('/participation');
+    const response = await axiosInstance.get("/participation");
     return response.data;
   },
 
   // Get current user's participations
   getMyParticipations: async (): Promise<Participation[]> => {
-    const response = await axiosInstance.get('/participation/my-participations');
+    const response = await axiosInstance.get(
+      "/participation/my-participations"
+    );
     return response.data;
   },
 
@@ -81,7 +83,10 @@ export const participationAPI = {
   },
 
   // Update participation
-  updateParticipation: async (id: string, data: UpdateParticipationData): Promise<Participation> => {
+  updateParticipation: async (
+    id: string,
+    data: UpdateParticipationData
+  ): Promise<Participation> => {
     const response = await axiosInstance.patch(`/participation/${id}`, data);
     return response.data;
   },
@@ -93,7 +98,9 @@ export const participationAPI = {
 
   // Confirm attendance (organizer/admin only)
   confirmAttendance: async (id: string): Promise<Participation> => {
-    const response = await axiosInstance.patch(`/participation/${id}/confirm-attendance`);
+    const response = await axiosInstance.patch(
+      `/participation/${id}/confirm-attendance`
+    );
     return response.data;
   },
 

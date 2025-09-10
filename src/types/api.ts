@@ -3,7 +3,7 @@ export interface Participation {
   id: string;
   userId: string;
   eventId: string;
-  status: 'registered' | 'cancelled' | 'confirmed' | 'attended';
+  status: "registered" | "cancelled" | "confirmed" | "attended";
   registrationDate: string;
   isAttended: boolean;
   notes?: string;
@@ -11,14 +11,14 @@ export interface Participation {
   updatedAt: string;
 }
 
-// Payment Types  
+// Payment Types
 export interface Payment {
   id: string;
   eventId: string;
   userId: string;
   amount: number;
   currency: string;
-  paymentStatus: 'pending' | 'completed' | 'failed' | 'refunded' | 'cancelled';
+  paymentStatus: "pending" | "completed" | "failed" | "refunded" | "cancelled";
   paymentMethod: string;
   transactionId?: string;
   transactionUUID?: string;

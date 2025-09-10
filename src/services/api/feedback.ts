@@ -4,13 +4,13 @@ export interface CreateFeedbackDto {
   eventId: string;
   reviewText: string;
   rating: number;
-  sentiment: 'positive' | 'negative' | 'neutral';
+  sentiment: "positive" | "negative" | "neutral";
 }
 
 export interface UpdateFeedbackDto {
   reviewText?: string;
   rating?: number;
-  sentiment?: 'positive' | 'negative' | 'neutral';
+  sentiment?: "positive" | "negative" | "neutral";
 }
 
 export interface Feedback {
@@ -33,26 +33,30 @@ export interface Feedback {
 }
 
 // Create feedback
-export const createFeedback = async (feedbackData: CreateFeedbackDto): Promise<Feedback> => {
-  const response = await axiosInstance.post('/feedbacks', feedbackData);
+export const createFeedback = async (
+  feedbackData: CreateFeedbackDto
+): Promise<Feedback> => {
+  const response = await axiosInstance.post("/feedbacks", feedbackData);
   return response.data;
 };
 
 // Get all feedbacks
 export const getAllFeedbacks = async (): Promise<Feedback[]> => {
-  const response = await axiosInstance.get('/feedbacks');
+  const response = await axiosInstance.get("/feedbacks");
   return response.data;
 };
 
 // Get feedbacks for specific event
-export const getEventFeedbacks = async (eventId: string): Promise<Feedback[]> => {
+export const getEventFeedbacks = async (
+  eventId: string
+): Promise<Feedback[]> => {
   const response = await axiosInstance.get(`/feedbacks/event/${eventId}`);
   return response.data;
 };
 
 // Get current user's feedbacks
 export const getMyFeedbacks = async (): Promise<Feedback[]> => {
-  const response = await axiosInstance.get('/feedbacks/my-feedbacks');
+  const response = await axiosInstance.get("/feedbacks/my-feedbacks");
   return response.data;
 };
 
@@ -63,7 +67,10 @@ export const getFeedback = async (id: string): Promise<Feedback> => {
 };
 
 // Update feedback
-export const updateFeedback = async (id: string, updateData: UpdateFeedbackDto): Promise<Feedback> => {
+export const updateFeedback = async (
+  id: string,
+  updateData: UpdateFeedbackDto
+): Promise<Feedback> => {
   const response = await axiosInstance.put(`/feedbacks/${id}`, updateData);
   return response.data;
 };

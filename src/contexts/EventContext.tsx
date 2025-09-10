@@ -197,9 +197,9 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
         maxAttendees: eventData.maxAttendees,
         imageUrl: eventData.imageUrl || undefined,
       };
-      
+
       // Remove undefined values
-      Object.keys(updateData).forEach(key => {
+      Object.keys(updateData).forEach((key) => {
         if (updateData[key] === undefined) {
           delete updateData[key];
         }
@@ -244,7 +244,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
   const registerForEvent = async (eventId: string) => {
     try {
       await participationAPI.register(eventId);
-      
+
       // Update local state
       const event = events.find((e) => e.id === eventId);
       if (event && !userEvents.find((e) => e.id === eventId)) {
@@ -257,7 +257,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
           )
         );
       }
-      
+
       addNotification({
         type: "success",
         title: "Registration Successful",
@@ -273,13 +273,15 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const getEventAnalytics = async (eventId: string): Promise<EventAnalytics | null> => {
+  const getEventAnalytics = async (
+    eventId: string
+  ): Promise<EventAnalytics | null> => {
     try {
       const response = await eventsAPI.getEventAnalytics(eventId);
       return response;
     } catch (error) {
       console.error("Failed to fetch event analytics:", error);
-      
+
       // Fallback to local data if API fails
       const event = events.find((e) => e.id === eventId);
       if (!event) return null;
@@ -288,7 +290,8 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
         eventId,
         eventTitle: event.title,
         totalRegistrations: event.currentAttendees,
-        totalRevenue: Number(event.currentAttendees) * Number(event.ticketPrice),
+        totalRevenue:
+          Number(event.currentAttendees) * Number(event.ticketPrice),
         attendanceRate: 0.85,
         demographicData: {
           ageGroups: { "18-25": 30, "26-35": 45, "36-45": 20, "46+": 5 },
@@ -327,10 +330,12 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  const getRecommendedEvents = async (userInterests?: string[]): Promise<Event[]> => {
+  const getRecommendedEvents = async (
+    userInterests?: string[]
+  ): Promise<Event[]> => {
     try {
       const response = await eventsAPI.getRecommendedEvents();
-      
+
       // Map EventDetails[] to Event[]
       const mappedEvents: Event[] = response.map((eventDetail: any) => ({
         id: eventDetail.id,
@@ -345,7 +350,8 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
         venueCapacity: eventDetail.venueCapacity || "",
         venueAmbiance: eventDetail.venueAmbiance || "",
         venueLocationType: eventDetail.venueLocationType || "",
-        ticketPrice: parseFloat(eventDetail.price || eventDetail.ticketPrice) || 0,
+        ticketPrice:
+          parseFloat(eventDetail.price || eventDetail.ticketPrice) || 0,
         priceCategory: eventDetail.priceCategory || "",
         category: eventDetail.category,
         tags: eventDetail.tags || [],
@@ -356,11 +362,11 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
         updatedAt: eventDetail.updatedAt,
         imageUrl: eventDetail.imageUrl,
       }));
-      
+
       return mappedEvents.slice(0, 6);
     } catch (error) {
       console.error("Failed to fetch recommended events:", error);
-      
+
       // Fallback to local filtering if API fails
       if (userInterests) {
         return events
@@ -371,7 +377,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
           )
           .slice(0, 6);
       }
-      
+
       return events.slice(0, 6);
     }
   };

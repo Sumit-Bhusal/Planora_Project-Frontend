@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, MapPin, Users, DollarSign, CheckCircle, AlertCircle } from 'lucide-react';
-import Card from '../UI/Card';
-import Button from '../UI/Button';
-import PaymentForm from '../Payment/PaymentForm';
-import { participationAPI } from '../../services/api/participation';
-import { eventsAPI } from '../../services/api/events';
-import { useCF } from '../../contexts/CFContext';
-import { useNotification } from '../../contexts/NotificationContext';
-import { EventDetails } from '../../types/event';
+import React, { useState, useEffect } from "react";
+import {
+  Calendar,
+  MapPin,
+  Users,
+  DollarSign,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
+import Card from "../UI/Card";
+import Button from "../UI/Button";
+import PaymentForm from "../Payment/PaymentForm";
+import { participationAPI } from "../../services/api/participation";
+import { eventsAPI } from "../../services/api/events";
+import { useCF } from "../../contexts/CFContext";
+import { useNotification } from "../../contexts/NotificationContext";
+import { EventDetails } from "../../types/event";
 
 interface EventRegistrationProps {
   eventId: string;
@@ -18,7 +25,7 @@ interface EventRegistrationProps {
 const EventRegistration: React.FC<EventRegistrationProps> = ({
   eventId,
   onRegistrationComplete,
-  onCancel
+  onCancel,
 }) => {
   const { trackRegistration } = useCF();
   const { addNotification } = useNotification();
@@ -28,7 +35,9 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
     status: string | null;
   }>({ isRegistered: false, status: null });
   const [loading, setLoading] = useState(true);
-  const [step, setStep] = useState<'details' | 'payment' | 'success'>('details');
+  const [step, setStep] = useState<"details" | "payment" | "success">(
+    "details"
+  );
   const [isRegistering, setIsRegistering] = useState(false);
 
   useEffect(() => {
@@ -37,17 +46,17 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
         setLoading(true);
         const [eventData, registrationData] = await Promise.all([
           eventsAPI.getEvent(eventId),
-          participationAPI.checkRegistration(eventId)
+          participationAPI.checkRegistration(eventId),
         ]);
-        
+
         setEvent(eventData);
         setRegistrationStatus(registrationData);
       } catch (error) {
-        console.error('Failed to load event data:', error);
+        console.error("Failed to load event data:", error);
         addNotification({
-          type: 'error',
-          title: 'Loading Error',
-          message: 'Failed to load event details. Please try again.'
+          type: "error",
+          title: "Loading Error",
+          message: "Failed to load event details. Please try again.",
         });
       } finally {
         setLoading(false);
@@ -61,26 +70,26 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
     setIsRegistering(true);
     try {
       const response = await participationAPI.register(eventId);
-      
+
       if (response.success) {
         // Track registration for ML
         await trackRegistration(eventId);
-        
+
         addNotification({
-          type: 'success',
-          title: 'Registration Successful!',
-          message: `You've successfully registered for ${event?.title}!`
+          type: "success",
+          title: "Registration Successful!",
+          message: `You've successfully registered for ${event?.title}!`,
         });
-        
-        setStep('success');
+
+        setStep("success");
         onRegistrationComplete?.();
       }
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error("Registration failed:", error);
       addNotification({
-        type: 'error',
-        title: 'Registration Failed',
-        message: 'Failed to register for the event. Please try again.'
+        type: "error",
+        title: "Registration Failed",
+        message: "Failed to register for the event. Please try again.",
       });
     } finally {
       setIsRegistering(false);
@@ -91,10 +100,10 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
     try {
       // Track registration for ML
       await trackRegistration(eventId);
-      setStep('success');
+      setStep("success");
       onRegistrationComplete?.();
     } catch (error) {
-      console.error('Failed to track registration:', error);
+      console.error("Failed to track registration:", error);
     }
   };
 
@@ -140,14 +149,17 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
             You're already registered for this event.
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-500">
-            Status: <span className="capitalize font-medium">{registrationStatus.status}</span>
+            Status:{" "}
+            <span className="capitalize font-medium">
+              {registrationStatus.status}
+            </span>
           </p>
         </div>
       </Card>
     );
   }
 
-  if (step === 'success') {
+  if (step === "success") {
     return (
       <Card>
         <div className="p-6 text-center">
@@ -171,21 +183,22 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
             </div>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-500">
-            You will receive a confirmation email shortly with your ticket details.
+            You will receive a confirmation email shortly with your ticket
+            details.
           </p>
         </div>
       </Card>
     );
   }
 
-  if (step === 'payment') {
+  if (step === "payment") {
     return (
       <PaymentForm
         eventId={eventId}
         eventTitle={event.title}
         amount={parseFloat(event.price)}
         onSuccess={handlePaymentSuccess}
-        onCancel={() => setStep('details')}
+        onCancel={() => setStep("details")}
       />
     );
   }
@@ -201,7 +214,7 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Register for Event
           </h2>
-          
+
           <div className="space-y-4">
             <div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -216,15 +229,17 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
               <div className="flex items-center space-x-2">
                 <Calendar className="h-5 w-5 text-gray-500" />
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Date & Time</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Date & Time
+                  </p>
                   <p className="font-medium text-gray-900 dark:text-white">
-                    {new Date(event.startDate).toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
+                    {new Date(event.startDate).toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
                     })}
                   </p>
                 </div>
@@ -233,7 +248,9 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
               <div className="flex items-center space-x-2">
                 <MapPin className="h-5 w-5 text-gray-500" />
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Location</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Location
+                  </p>
                   <p className="font-medium text-gray-900 dark:text-white">
                     {event.location}
                   </p>
@@ -243,7 +260,9 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
               <div className="flex items-center space-x-2">
                 <Users className="h-5 w-5 text-gray-500" />
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Capacity</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Capacity
+                  </p>
                   <p className="font-medium text-gray-900 dark:text-white">
                     {event.currentAttendees} / {event.maxAttendees} registered
                   </p>
@@ -253,9 +272,11 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
               <div className="flex items-center space-x-2">
                 <DollarSign className="h-5 w-5 text-gray-500" />
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Price</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Price
+                  </p>
                   <p className="font-medium text-gray-900 dark:text-white">
-                    {isFree ? 'Free' : `$${parseFloat(event.price).toFixed(2)}`}
+                    {isFree ? "Free" : `$${parseFloat(event.price).toFixed(2)}`}
                   </p>
                 </div>
               </div>
@@ -270,7 +291,8 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
                   </p>
                 </div>
                 <p className="text-yellow-700 dark:text-yellow-300 text-sm mt-1">
-                  You can join the waitlist to be notified if spots become available.
+                  You can join the waitlist to be notified if spots become
+                  available.
                 </p>
               </div>
             )}
@@ -287,10 +309,11 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
                 Complete Registration
               </h4>
               <p className="text-gray-600 dark:text-gray-400">
-                {isFree 
-                  ? 'Click register to secure your spot at this free event.'
-                  : `Pay $${parseFloat(event.price).toFixed(2)} to complete your registration.`
-                }
+                {isFree
+                  ? "Click register to secure your spot at this free event."
+                  : `Pay $${parseFloat(event.price).toFixed(
+                      2
+                    )} to complete your registration.`}
               </p>
             </div>
           </div>
@@ -303,11 +326,13 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
                 className="flex items-center space-x-2"
               >
                 <CheckCircle className="h-4 w-4" />
-                <span>{isRegistering ? 'Registering...' : 'Register for Free'}</span>
+                <span>
+                  {isRegistering ? "Registering..." : "Register for Free"}
+                </span>
               </Button>
             ) : (
               <Button
-                onClick={() => setStep('payment')}
+                onClick={() => setStep("payment")}
                 disabled={isEventFull}
                 className="flex items-center space-x-2"
               >
@@ -315,7 +340,7 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
                 <span>Proceed to Payment</span>
               </Button>
             )}
-            
+
             {onCancel && (
               <Button variant="outline" onClick={onCancel}>
                 Cancel

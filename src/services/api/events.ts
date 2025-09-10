@@ -42,14 +42,14 @@ export interface EventFilters {
 export const eventsAPI = {
   // Public endpoints
   getAllEvents: async (filters?: EventFilters): Promise<EventDetails[]> => {
-    const response = await axiosInstance.get('/events', {
-      params: filters
+    const response = await axiosInstance.get("/events", {
+      params: filters,
     });
     return response.data;
   },
 
   browseAllEvents: async (): Promise<EventDetails[]> => {
-    const response = await axiosInstance.get('/events/browse/all');
+    const response = await axiosInstance.get("/events/browse/all");
     return response.data;
   },
 
@@ -60,27 +60,32 @@ export const eventsAPI = {
 
   // Protected endpoints
   getDashboardEvents: async (): Promise<EventDetails[]> => {
-    const response = await axiosInstance.get('/events/dashboard');
+    const response = await axiosInstance.get("/events/dashboard");
     return response.data;
   },
 
   getRecommendedEvents: async (): Promise<any> => {
-    const response = await axiosInstance.get('/events/recommendations/for-me');
+    const response = await axiosInstance.get("/events/recommendations/for-me");
     return response.data;
   },
 
   getOrganizerEvents: async (organizerId: string): Promise<EventDetails[]> => {
-    const response = await axiosInstance.get(`/events/organizer/${organizerId}`);
+    const response = await axiosInstance.get(
+      `/events/organizer/${organizerId}`
+    );
     return response.data;
   },
 
   // CRUD operations
   createEvent: async (eventData: CreateEventData): Promise<EventDetails> => {
-    const response = await axiosInstance.post('/events/create', eventData);
+    const response = await axiosInstance.post("/events/create", eventData);
     return response.data;
   },
 
-  updateEvent: async (id: string, eventData: UpdateEventData): Promise<EventDetails> => {
+  updateEvent: async (
+    id: string,
+    eventData: UpdateEventData
+  ): Promise<EventDetails> => {
     const response = await axiosInstance.put(`/events/${id}`, eventData);
     return response.data;
   },
@@ -91,7 +96,7 @@ export const eventsAPI = {
 
   // Analytics endpoints
   getOrganizerAnalytics: async (): Promise<any> => {
-    const response = await axiosInstance.get('/events/analytics/organizer');
+    const response = await axiosInstance.get("/events/analytics/organizer");
     return response.data;
   },
 
