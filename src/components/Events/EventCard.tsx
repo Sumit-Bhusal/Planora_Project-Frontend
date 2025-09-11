@@ -46,6 +46,9 @@ const EventCard: React.FC<EventCardProps> = ({
   // Default to user variant if not specified
   const cardVariant = variant || "user";
 
+  // Debug price
+  console.log(`EventCard for ${event.title} - ticketPrice:`, event.ticketPrice, typeof event.ticketPrice);
+
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
       month: "short",

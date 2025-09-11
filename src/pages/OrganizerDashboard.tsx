@@ -18,7 +18,6 @@ import Button from "../components/UI/Button";
 import EventCard from "../components/Events/EventCard";
 import { Link, useNavigate } from "react-router-dom";
 import { useEvents } from "../contexts/EventContext";
-
 const OrganizerDashboard: React.FC<{
   user: any;
   organizerEvents: any[];
@@ -62,8 +61,12 @@ const OrganizerDashboard: React.FC<{
       label: "Revenue",
       value: `NPR ${organizerEvents
         .reduce(
-          (sum, event) =>
-            sum + Number(event.currentAttendees) * Number(event.price),
+          (sum, event) => {
+            const attendees = Number(event.currentAttendees) || 0;
+            const price = Number(event.ticketPrice || event.price) || 0;
+            console.log('Revenue calculation:', { eventTitle: event.title, attendees, price, eventData: event });
+            return sum + (attendees * price);
+          },
           0
         )
         .toLocaleString()}`,
@@ -232,7 +235,7 @@ const OrganizerDashboard: React.FC<{
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {organizerEvents.slice(0, 4).map((event) => (
                 <EventCard
-                  key={event.id}
+                  key={`${event.id}-${event.updatedAt}-${event.ticketPrice}-${Date.now()}`}
                   event={event}
                   variant="organizer"
                   onEdit={() => handleEventEdit(event)}

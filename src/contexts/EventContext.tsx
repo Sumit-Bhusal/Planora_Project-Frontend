@@ -77,17 +77,17 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
         description: eventDetail.description,
         startDate: eventDetail.startDate,
         endDate: eventDetail.endDate,
-        city: eventDetail.location, // Map location to city
-        venue: "", // Default value
-        venueType: "",
-        venueSuitability: [],
-        venueCapacity: "",
-        venueAmbiance: "",
-        venueLocationType: "",
-        ticketPrice: parseFloat(eventDetail.price) || 0,
-        priceCategory: "",
+        city: eventDetail.city || eventDetail.location || "",
+        venue: eventDetail.venue || "",
+        venueType: eventDetail.venueType || "",
+        venueSuitability: eventDetail.venueSuitability || [],
+        venueCapacity: eventDetail.venueCapacity || "",
+        venueAmbiance: eventDetail.venueAmbiance || "",
+        venueLocationType: eventDetail.venueLocationType || "",
+        ticketPrice: eventDetail.ticketPrice !== undefined ? Number(eventDetail.ticketPrice) : (eventDetail.price ? parseFloat(eventDetail.price) : 0),
+        priceCategory: eventDetail.priceCategory || "",
         category: eventDetail.category,
-        tags: [],
+        tags: eventDetail.tags || [],
         maxAttendees: eventDetail.maxAttendees,
         currentAttendees: eventDetail.currentAttendees,
         organizer: eventDetail.organizer,
@@ -114,31 +114,38 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
         // Use the new dashboard endpoint which will return role-specific events
         const response = await eventsAPI.getDashboardEvents();
         // Map EventDetails[] to Event[]
-        const mappedEvents: Event[] = response.map((eventDetail) => ({
-          id: eventDetail.id,
-          title: eventDetail.title,
-          description: eventDetail.description,
-          startDate: eventDetail.startDate,
-          endDate: eventDetail.endDate,
-          city: eventDetail.location,
-          venue: "",
-          venueType: "",
-          venueSuitability: [],
-          venueCapacity: "",
-          venueAmbiance: "",
-          venueLocationType: "",
-          ticketPrice: parseFloat(eventDetail.price) || 0,
-          priceCategory: "",
-          category: eventDetail.category,
-          tags: [],
-          maxAttendees: eventDetail.maxAttendees,
-          currentAttendees: eventDetail.currentAttendees,
-          organizer: eventDetail.organizer,
-          createdAt: eventDetail.createdAt,
-          updatedAt: eventDetail.updatedAt,
-          imageUrl: eventDetail.imageUrl,
-        }));
-        setOrganizerEvents(mappedEvents);
+        const mappedEvents: Event[] = response.map((eventDetail) => {
+          console.log("Mapping event detail:", eventDetail);
+          console.log("Price fields - ticketPrice:", eventDetail.ticketPrice, "price:", eventDetail.price);
+          return {
+            id: eventDetail.id,
+            title: eventDetail.title,
+            description: eventDetail.description,
+            startDate: eventDetail.startDate,
+            endDate: eventDetail.endDate,
+            city: eventDetail.city || eventDetail.location || "",
+            venue: eventDetail.venue || "",
+            venueType: eventDetail.venueType || "",
+            venueSuitability: eventDetail.venueSuitability || [],
+            venueCapacity: eventDetail.venueCapacity || "",
+            venueAmbiance: eventDetail.venueAmbiance || "",
+            venueLocationType: eventDetail.venueLocationType || "",
+            ticketPrice: eventDetail.ticketPrice !== undefined ? Number(eventDetail.ticketPrice) : (eventDetail.price ? parseFloat(eventDetail.price) : 0),
+            priceCategory: eventDetail.priceCategory || "",
+            category: eventDetail.category,
+            tags: eventDetail.tags || [],
+            maxAttendees: eventDetail.maxAttendees,
+            currentAttendees: eventDetail.currentAttendees,
+            organizer: eventDetail.organizer,
+            createdAt: eventDetail.createdAt,
+            updatedAt: eventDetail.updatedAt,
+            imageUrl: eventDetail.imageUrl,
+          };
+        });
+        // Force completely new objects to trigger React re-renders
+        const freshEvents = mappedEvents.map(event => ({ ...event, _timestamp: Date.now() }));
+        console.log("Setting organizer events:", freshEvents.map(e => ({ id: e.id, title: e.title, updatedAt: e.updatedAt })));
+        setOrganizerEvents(freshEvents);
       }
     } catch (error) {
       setOrganizerEvents([]);
@@ -160,6 +167,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await eventsAPI.createEvent(eventData);
       await fetchEvents();
+      await fetchOrganizerEvents(); // Also refresh organizer events
       addNotification({
         type: "success",
         title: "Success",
@@ -170,7 +178,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
       addNotification({
         type: "error",
         title: "Error",
-        message: "Failed to create event. Please try again.",
+        message: `Failed to create event: ${(error as any).response?.data?.message || "Please try again."}`,
       });
     }
   };
@@ -205,8 +213,15 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       });
 
-      await eventsAPI.updateEvent(id, updateData);
-      await fetchEvents();
+      console.log("Final update data being sent to API:", updateData);
+      console.log("TicketPrice specifically:", updateData.ticketPrice, typeof updateData.ticketPrice);
+
+      const updatedEvent = await eventsAPI.updateEvent(id, updateData);
+      console.log("Update API response:", updatedEvent);
+      
+      // Force refresh both event lists
+      await Promise.all([fetchEvents(), fetchOrganizerEvents()]);
+      
       addNotification({
         type: "success",
         title: "Success",
@@ -217,7 +232,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
       addNotification({
         type: "error",
         title: "Error",
-        message: "Failed to update event. Please try again.",
+        message: `Failed to update event: ${(error as any).response?.data?.message || "Please try again."}`,
       });
     }
   };
@@ -226,6 +241,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await eventsAPI.deleteEvent(id);
       await fetchEvents();
+      await fetchOrganizerEvents(); // Also refresh organizer events
       addNotification({
         type: "success",
         title: "Success",
@@ -236,7 +252,7 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
       addNotification({
         type: "error",
         title: "Error",
-        message: "Failed to delete event. Please try again.",
+        message: `Failed to delete event: ${(error as any).response?.data?.message || "Please try again."}`,
       });
     }
   };

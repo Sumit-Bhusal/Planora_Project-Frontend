@@ -33,6 +33,18 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.status === 401) {
+      console.error("Authentication failed - redirecting to login");
+      // Remove invalid token
+      import("./cookies").then(({ removeCookie }) => {
+        removeCookie();
+        localStorage.removeItem("user");
+        window.location.href = "/auth/login";
+      });
+    }
+    if (error.response?.status === 403) {
+      console.error("Authorization failed - insufficient permissions");
+    }
     return Promise.reject(error);
   }
 );

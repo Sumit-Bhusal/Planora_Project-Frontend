@@ -25,6 +25,7 @@ const Dashboard: React.FC = () => {
 
   return isOrganizer ? (
     <OrganizerDashboard
+      key={`organizer-${organizerEvents.length}`}
       user={user}
       organizerEvents={organizerEvents}
       handleManageAttendees={() => {}}

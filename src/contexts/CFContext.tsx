@@ -36,16 +36,24 @@ export const CFProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   const [currentModel, setCurrentModel] = useState<'knn' | 'random_forest' | 'ensemble'>('knn');
 
   const loadRecommendations = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log('CF: No user, skipping recommendations');
+      return;
+    }
     
+    console.log('CF: Loading recommendations for user:', user.id);
     setIsLoading(true);
     try {
       const eventData = await cfApi.getRecommendedEvents();
+      console.log('CF: Received recommendation data:', eventData);
       if (eventData.success) {
         setRecommendations(eventData.recommendations);
+        console.log('CF: Set recommendations:', eventData.recommendations);
+      } else {
+        console.log('CF: No successful recommendation data');
       }
     } catch (error) {
-      console.error('Failed to load recommendations:', error);
+      console.error('CF: Failed to load recommendations:', error);
     } finally {
       setIsLoading(false);
     }

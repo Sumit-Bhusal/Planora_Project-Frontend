@@ -5,9 +5,17 @@ export interface EventDetails {
   description: string;
   startDate: string;
   endDate: string;
-  location: string;
-  price: string;
+  city: string;
+  venue: string;
+  venueType: string;
+  venueSuitability: string[];
+  venueCapacity: string;
+  venueAmbiance: string;
+  venueLocationType: string;
+  ticketPrice: number;
+  priceCategory: string;
   category: string;
+  tags: string[];
   maxAttendees: number;
   currentAttendees: number;
   organizer: {
@@ -19,6 +27,9 @@ export interface EventDetails {
   createdAt: string;
   updatedAt: string;
   imageUrl?: string | null;
+  // Legacy fields for backward compatibility
+  location?: string;
+  price?: string;
 }
 
 export interface RegisterResponse {

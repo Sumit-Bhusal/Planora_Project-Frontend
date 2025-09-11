@@ -8,12 +8,14 @@ import EventCard from "../../components/Events/EventCard";
 import Input from "../../components/UI/Input";
 import Button from "../../components/UI/Button";
 import Card from "../../components/UI/Card";
+import { useNavigate } from "react-router-dom";
 
 const EventList: React.FC = () => {
   const { events, searchEvents, registerForEvent } = useEvents();
   const { user } = useAuth();
   const { addNotification } = useNotification();
   const { recommendations, trackView, trackRegistration } = useCF();
+  const navigate = useNavigate();
 
   // Keep all existing state
   const [searchQuery, setSearchQuery] = useState("");
@@ -171,7 +173,12 @@ const EventList: React.FC = () => {
                   <Button
                     size="sm"
                     className="w-full bg-gradient-to-r from-purple-500 to-blue-500"
-                    onClick={() => handleRegister(event.id)}
+                    onClick={() => {
+                      // Track only a view here; don’t auto-register
+                      trackView(event.id);
+                      // Navigate to the details/registration preview with state
+                      navigate('/events/register', { state: { event } });
+                    }}
                   >
                     View Details
                   </Button>
