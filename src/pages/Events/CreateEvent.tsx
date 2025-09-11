@@ -24,7 +24,14 @@ function toDatetimeLocal(dateString: string) {
 }
 
 const CreateEvent: React.FC = () => {
-  const { createEvent, updateEvent, isEditing, editingEvent, setEditingEvent, fetchEvents } = useEvents();
+  const {
+    createEvent,
+    updateEvent,
+    isEditing,
+    editingEvent,
+    setEditingEvent,
+    fetchEvents,
+  } = useEvents();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -60,7 +67,7 @@ const CreateEvent: React.FC = () => {
     "Education",
     "Health & Wellness",
     "Photography",
-    "Social"
+    "Social",
   ];
 
   // Add options for enums
@@ -74,7 +81,7 @@ const CreateEvent: React.FC = () => {
     "Hotel",
     "Exhibition Center",
     "Museum",
-    "Convention Center"
+    "Convention Center",
   ];
   const venueSuitabilityOptions = [
     "Government",
@@ -98,44 +105,174 @@ const CreateEvent: React.FC = () => {
     "Camps",
     "CommunityEvents",
     "ArtTech",
-    "Fairs"
+    "Fairs",
   ];
   const venueCapacities = ["Small", "Medium", "Large"];
-  const venueAmbiances = ["Casual", "Formal", "Rustic", "Modern", "Elegant", "Industrial", "Outdoor", "Indoor", "Cozy", "Vibrant", "Sophisticated", "Intimate", "Luxurious", "Minimalist", "Artistic", "Themed", "Classic", "Trendy", "Eclectic", "Unique", "Professional", "Relaxed", "Welcoming", "Lively", "Serene", "Chic", "Contemporary", "Rustic Chic", "Vintage", "Bohemian", "Urban", "Coastal", "Mountain", "Garden", "Beach", "Forest"];
-  const venueLocationTypes = ["Urban", "Suburban", "Rural", "Waterfront", "Mountainous", "Forested", "Desert", "Coastal", "Countryside", "CityCenter", "Downtown", "HistoricDistrict"];
-  const priceCategories = ["Free", "Cheap", "Medium", "Expensive", "VeryExpensive", "Premium", "Luxury", "Exclusive", "VIP"];
+  const venueAmbiances = [
+    "Casual",
+    "Formal",
+    "Rustic",
+    "Modern",
+    "Elegant",
+    "Industrial",
+    "Outdoor",
+    "Indoor",
+    "Cozy",
+    "Vibrant",
+    "Sophisticated",
+    "Intimate",
+    "Luxurious",
+    "Minimalist",
+    "Artistic",
+    "Themed",
+    "Classic",
+    "Trendy",
+    "Eclectic",
+    "Unique",
+    "Professional",
+    "Relaxed",
+    "Welcoming",
+    "Lively",
+    "Serene",
+    "Chic",
+    "Contemporary",
+    "Rustic Chic",
+    "Vintage",
+    "Bohemian",
+    "Urban",
+    "Coastal",
+    "Mountain",
+    "Garden",
+    "Beach",
+    "Forest",
+  ];
+  const venueLocationTypes = [
+    "Urban",
+    "Suburban",
+    "Rural",
+    "Waterfront",
+    "Mountainous",
+    "Forested",
+    "Desert",
+    "Coastal",
+    "Countryside",
+    "CityCenter",
+    "Downtown",
+    "HistoricDistrict",
+  ];
+  const priceCategories = [
+    "Free",
+    "Cheap",
+    "Medium",
+    "Expensive",
+    "VeryExpensive",
+    "Premium",
+    "Luxury",
+    "Exclusive",
+    "VIP",
+  ];
 
   const venues = [
     { name: "Hotel Yak & Yeti", address: "Durbar Marg, Kathmandu 44600" },
-    { name: "Bhrikuti Mandap Exhibition Hall", address: "Exhibition Road, Kathmandu 44600" },
-    { name: "Soaltee Kathmandu (Autograph Collection)", address: "Tahachal‑13, Kathmandu 44600" },
+    {
+      name: "Bhrikuti Mandap Exhibition Hall",
+      address: "Exhibition Road, Kathmandu 44600",
+    },
+    {
+      name: "Soaltee Kathmandu (Autograph Collection)",
+      address: "Tahachal‑13, Kathmandu 44600",
+    },
     { name: "The Malla Hotel", address: "Lekhnath Marg, Kathmandu 44600" },
-    { name: "Rastriya Sabha Griha (City Hall)", address: "Kathmandu‑28, Kathmandu 44600" },
-    { name: "Pokhara Grande Hotel", address: "Birauta Chowk, Pardi-17, Pokhara" },
-    { name: "International Mountain Museum", address: "Ratopairo, Pokhara 33700" },
-    { name: "Hotel Barahi Conference Hall", address: "Lakeside Pokhara, near Fewa Lake, Pokhara 33700" },
-    { name: "Annapurna Events Centre", address: "Shrikrishna Marga, Bulaudai - 6, Pokhara" },
-    { name: "Temple Tree Resort & Spa", address: "Gaurighat-6, Lakeside Pokhara" },
-    { name: "Patan Museum Courtyard", address: "Patan Durbar Square, UNESCO core zone, Lalitpur" },
+    {
+      name: "Rastriya Sabha Griha (City Hall)",
+      address: "Kathmandu‑28, Kathmandu 44600",
+    },
+    {
+      name: "Pokhara Grande Hotel",
+      address: "Birauta Chowk, Pardi-17, Pokhara",
+    },
+    {
+      name: "International Mountain Museum",
+      address: "Ratopairo, Pokhara 33700",
+    },
+    {
+      name: "Hotel Barahi Conference Hall",
+      address: "Lakeside Pokhara, near Fewa Lake, Pokhara 33700",
+    },
+    {
+      name: "Annapurna Events Centre",
+      address: "Shrikrishna Marga, Bulaudai - 6, Pokhara",
+    },
+    {
+      name: "Temple Tree Resort & Spa",
+      address: "Gaurighat-6, Lakeside Pokhara",
+    },
+    {
+      name: "Patan Museum Courtyard",
+      address: "Patan Durbar Square, UNESCO core zone, Lalitpur",
+    },
     { name: "The Summit Hotel", address: "Patan, Lalitpur" },
-    { name: "Godavari Village Resort", address: "Godavari‑3, Lalitpur (12–13 km SE of Kathmandu center)" },
-    { name: "Labim Mall Event Spaces", address: "Pulchowk, Lalitpur (Labim Mall complex)" },
+    {
+      name: "Godavari Village Resort",
+      address: "Godavari‑3, Lalitpur (12–13 km SE of Kathmandu center)",
+    },
+    {
+      name: "Labim Mall Event Spaces",
+      address: "Pulchowk, Lalitpur (Labim Mall complex)",
+    },
     { name: "Hotel Himalaya", address: "Kupondole Height, Lalitpur" },
-    { name: "Bhaktapur Durbar Square Courtyard", address: "Durbar Square, Bhaktapur‑11 (Nyatapola), UNESCO zone" },
-    { name: "Vajra Hotel & Convention Centre", address: "Off Nagarkot Road, Bhaktapur municipality" },
-    { name: "Heritage Banquet Bhaktapur", address: "Near Ring Road, Bhaktapur" },
-    { name: "Peace Land Party Palace", address: "Suburban Bhaktapur (exact street needs local validation)" },
-    { name: "Nagarkot Farm House", address: "Nagarkot‑2, Bhaktapur District (~12 km NE from city center)" },
-    { name: "Bharatpur Garden Resort", address: "Bharatpur‑10 (Bharatpur Height), Chitwan" },
-    { name: "Hotel Royal Century", address: "Bharatpur Height, Bharatpur 44600" },
+    {
+      name: "Bhaktapur Durbar Square Courtyard",
+      address: "Durbar Square, Bhaktapur‑11 (Nyatapola), UNESCO zone",
+    },
+    {
+      name: "Vajra Hotel & Convention Centre",
+      address: "Off Nagarkot Road, Bhaktapur municipality",
+    },
+    {
+      name: "Heritage Banquet Bhaktapur",
+      address: "Near Ring Road, Bhaktapur",
+    },
+    {
+      name: "Peace Land Party Palace",
+      address: "Suburban Bhaktapur (exact street needs local validation)",
+    },
+    {
+      name: "Nagarkot Farm House",
+      address: "Nagarkot‑2, Bhaktapur District (~12 km NE from city center)",
+    },
+    {
+      name: "Bharatpur Garden Resort",
+      address: "Bharatpur‑10 (Bharatpur Height), Chitwan",
+    },
+    {
+      name: "Hotel Royal Century",
+      address: "Bharatpur Height, Bharatpur 44600",
+    },
     { name: "Chitwan Expo Center", address: "Bharatpur‑10, Chitwan" },
-    { name: "Green Park Chitwan", address: "Sauraha‑15, Chitwan (near National Park entry)" },
+    {
+      name: "Green Park Chitwan",
+      address: "Sauraha‑15, Chitwan (near National Park entry)",
+    },
     { name: "Rhino Residency Resort", address: "Sauraha‑15, Chitwan" },
-    { name: "Butwal International Convention Centre (BICC)", address: "~500 m east of Butwal city center, Siddhartha Highway (Butwal‑6)" },
+    {
+      name: "Butwal International Convention Centre (BICC)",
+      address:
+        "~500 m east of Butwal city center, Siddhartha Highway (Butwal‑6)",
+    },
     { name: "Hotel Da Flamingo", address: "Jogikuti, Butwal 44600" },
-    { name: "Dreamland Gold Resort & Hotel", address: "Tilottama‑5, Manigram, Rupandehi" },
-    { name: "Hotel Tulip", address: "Nar and Malla Path, Jogikuti, Butwal 32907" },
-    { name: "Hotel Avenue", address: "Golpark‑5, ~1.8 km west of Butwal center" },
+    {
+      name: "Dreamland Gold Resort & Hotel",
+      address: "Tilottama‑5, Manigram, Rupandehi",
+    },
+    {
+      name: "Hotel Tulip",
+      address: "Nar and Malla Path, Jogikuti, Butwal 32907",
+    },
+    {
+      name: "Hotel Avenue",
+      address: "Golpark‑5, ~1.8 km west of Butwal center",
+    },
   ];
 
   useEffect(() => {
@@ -153,9 +290,13 @@ const CreateEvent: React.FC = () => {
         venueCapacity: editingEvent.venueCapacity || "",
         venueAmbiance: editingEvent.venueAmbiance || "",
         venueLocationType: editingEvent.venueLocationType || "",
-        ticketPrice: editingEvent.ticketPrice ? String(editingEvent.ticketPrice) : "0",
+        ticketPrice: editingEvent.ticketPrice
+          ? String(editingEvent.ticketPrice)
+          : "0",
         priceCategory: editingEvent.priceCategory || "",
-        maxAttendees: editingEvent.maxAttendees ? String(editingEvent.maxAttendees) : "0",
+        maxAttendees: editingEvent.maxAttendees
+          ? String(editingEvent.maxAttendees)
+          : "0",
         tags: (editingEvent.tags || []).join(", "),
         imageUrl: editingEvent.imageUrl || "",
       });
@@ -248,7 +389,10 @@ const CreateEvent: React.FC = () => {
         ticketPrice: Number(formData.ticketPrice),
         priceCategory: formData.priceCategory,
         maxAttendees: Number(formData.maxAttendees),
-        tags: formData.tags.split(",").map((tag) => tag.trim()).filter(Boolean),
+        tags: formData.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean),
         imageUrl: formData.imageUrl,
       };
       if (editingEvent && editingEvent.id) {
@@ -364,33 +508,47 @@ const CreateEvent: React.FC = () => {
                   </h2>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue Type <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Venue Type <span className="text-red-500">*</span>
+                      </label>
                       <select
                         value={formData.venueType}
-                        onChange={(e) => handleInputChange("venueType", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("venueType", e.target.value)
+                        }
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         required
                       >
                         <option value="">Select venue type</option>
                         {venueTypes.map((type) => (
-                          <option key={type} value={type}>{type}</option>
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue Suitability <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Venue Suitability{" "}
+                        <span className="text-red-500">*</span>
+                      </label>
                       <div className="flex flex-wrap gap-2">
                         {venueSuitabilityOptions.map((option) => (
                           <label key={option} className="flex items-center">
                             <input
                               type="checkbox"
-                              checked={formData.venueSuitability.includes(option)}
+                              checked={formData.venueSuitability.includes(
+                                option
+                              )}
                               onChange={() => {
                                 setFormData((prev) => ({
                                   ...prev,
-                                  venueSuitability: prev.venueSuitability.includes(option)
-                                    ? prev.venueSuitability.filter((v) => v !== option)
-                                    : [...prev.venueSuitability, option],
+                                  venueSuitability:
+                                    prev.venueSuitability.includes(option)
+                                      ? prev.venueSuitability.filter(
+                                          (v) => v !== option
+                                        )
+                                      : [...prev.venueSuitability, option],
                                 }));
                               }}
                             />
@@ -400,58 +558,83 @@ const CreateEvent: React.FC = () => {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue Capacity <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Venue Capacity <span className="text-red-500">*</span>
+                      </label>
                       <select
                         value={formData.venueCapacity}
-                        onChange={(e) => handleInputChange("venueCapacity", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("venueCapacity", e.target.value)
+                        }
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         required
                       >
                         <option value="">Select capacity</option>
                         {venueCapacities.map((cap) => (
-                          <option key={cap} value={cap}>{cap}</option>
+                          <option key={cap} value={cap}>
+                            {cap}
+                          </option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue Ambiance <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Venue Ambiance <span className="text-red-500">*</span>
+                      </label>
                       <select
                         value={formData.venueAmbiance}
-                        onChange={(e) => handleInputChange("venueAmbiance", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("venueAmbiance", e.target.value)
+                        }
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         required
                       >
                         <option value="">Select ambiance</option>
                         {venueAmbiances.map((amb) => (
-                          <option key={amb} value={amb}>{amb}</option>
+                          <option key={amb} value={amb}>
+                            {amb}
+                          </option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue Location Type <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Venue Location Type{" "}
+                        <span className="text-red-500">*</span>
+                      </label>
                       <select
                         value={formData.venueLocationType}
-                        onChange={(e) => handleInputChange("venueLocationType", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("venueLocationType", e.target.value)
+                        }
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         required
                       >
                         <option value="">Select location type</option>
                         {venueLocationTypes.map((loc) => (
-                          <option key={loc} value={loc}>{loc}</option>
+                          <option key={loc} value={loc}>
+                            {loc}
+                          </option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price Category <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Price Category <span className="text-red-500">*</span>
+                      </label>
                       <select
                         value={formData.priceCategory}
-                        onChange={(e) => handleInputChange("priceCategory", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("priceCategory", e.target.value)
+                        }
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         required
                       >
                         <option value="">Select price category</option>
                         {priceCategories.map((cat) => (
-                          <option key={cat} value={cat}>{cat}</option>
+                          <option key={cat} value={cat}>
+                            {cat}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -507,26 +690,37 @@ const CreateEvent: React.FC = () => {
                     <Input
                       label="City"
                       value={formData.city}
-                      onChange={(e) => handleInputChange("city", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("city", e.target.value)
+                      }
                       placeholder="Enter city"
                       required
                     />
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue Name <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Venue Name <span className="text-red-500">*</span>
+                      </label>
                       <select
                         value={formData.venue}
-                        onChange={(e) => handleInputChange("venue", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("venue", e.target.value)
+                        }
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         required
                       >
                         <option value="">Select a venue</option>
                         {venues.map((venue) => (
-                          <option key={venue.name} value={venue.name}>{venue.name}</option>
+                          <option key={venue.name} value={venue.name}>
+                            {venue.name}
+                          </option>
                         ))}
                       </select>
                       {formData.venue && (
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                          {venues.find((v) => v.name === formData.venue)?.address}
+                          {
+                            venues.find((v) => v.name === formData.venue)
+                              ?.address
+                          }
                         </p>
                       )}
                     </div>
@@ -543,7 +737,9 @@ const CreateEvent: React.FC = () => {
                       label="Ticket Price (NPR)"
                       type="number"
                       value={formData.ticketPrice}
-                      onChange={(e) => handleInputChange("ticketPrice", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("ticketPrice", e.target.value)
+                      }
                       placeholder="0"
                       icon={DollarSign}
                       required
@@ -552,7 +748,9 @@ const CreateEvent: React.FC = () => {
                       label="Maximum Attendees"
                       type="number"
                       value={formData.maxAttendees}
-                      onChange={(e) => handleInputChange("maxAttendees", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("maxAttendees", e.target.value)
+                      }
                       placeholder="Maximum attendees"
                       icon={Users}
                       required
@@ -568,7 +766,9 @@ const CreateEvent: React.FC = () => {
                   <Input
                     label="Image URL"
                     value={formData.imageUrl}
-                    onChange={(e) => handleInputChange("imageUrl", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("imageUrl", e.target.value)
+                    }
                     placeholder="https://example.com/image.jpg"
                     icon={Image}
                   />

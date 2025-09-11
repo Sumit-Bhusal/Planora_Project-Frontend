@@ -84,7 +84,12 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
         venueCapacity: eventDetail.venueCapacity || "",
         venueAmbiance: eventDetail.venueAmbiance || "",
         venueLocationType: eventDetail.venueLocationType || "",
-        ticketPrice: eventDetail.ticketPrice !== undefined ? Number(eventDetail.ticketPrice) : (eventDetail.price ? parseFloat(eventDetail.price) : 0),
+        ticketPrice:
+          eventDetail.ticketPrice !== undefined
+            ? Number(eventDetail.ticketPrice)
+            : eventDetail.price
+            ? parseFloat(eventDetail.price)
+            : 0,
         priceCategory: eventDetail.priceCategory || "",
         category: eventDetail.category,
         tags: eventDetail.tags || [],
@@ -116,7 +121,12 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
         // Map EventDetails[] to Event[]
         const mappedEvents: Event[] = response.map((eventDetail) => {
           console.log("Mapping event detail:", eventDetail);
-          console.log("Price fields - ticketPrice:", eventDetail.ticketPrice, "price:", eventDetail.price);
+          console.log(
+            "Price fields - ticketPrice:",
+            eventDetail.ticketPrice,
+            "price:",
+            eventDetail.price
+          );
           return {
             id: eventDetail.id,
             title: eventDetail.title,
@@ -130,7 +140,12 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
             venueCapacity: eventDetail.venueCapacity || "",
             venueAmbiance: eventDetail.venueAmbiance || "",
             venueLocationType: eventDetail.venueLocationType || "",
-            ticketPrice: eventDetail.ticketPrice !== undefined ? Number(eventDetail.ticketPrice) : (eventDetail.price ? parseFloat(eventDetail.price) : 0),
+            ticketPrice:
+              eventDetail.ticketPrice !== undefined
+                ? Number(eventDetail.ticketPrice)
+                : eventDetail.price
+                ? parseFloat(eventDetail.price)
+                : 0,
             priceCategory: eventDetail.priceCategory || "",
             category: eventDetail.category,
             tags: eventDetail.tags || [],
@@ -143,8 +158,18 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
           };
         });
         // Force completely new objects to trigger React re-renders
-        const freshEvents = mappedEvents.map(event => ({ ...event, _timestamp: Date.now() }));
-        console.log("Setting organizer events:", freshEvents.map(e => ({ id: e.id, title: e.title, updatedAt: e.updatedAt })));
+        const freshEvents = mappedEvents.map((event) => ({
+          ...event,
+          _timestamp: Date.now(),
+        }));
+        console.log(
+          "Setting organizer events:",
+          freshEvents.map((e) => ({
+            id: e.id,
+            title: e.title,
+            updatedAt: e.updatedAt,
+          }))
+        );
         setOrganizerEvents(freshEvents);
       }
     } catch (error) {
@@ -178,7 +203,9 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
       addNotification({
         type: "error",
         title: "Error",
-        message: `Failed to create event: ${(error as any).response?.data?.message || "Please try again."}`,
+        message: `Failed to create event: ${
+          (error as any).response?.data?.message || "Please try again."
+        }`,
       });
     }
   };
@@ -214,14 +241,18 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
       });
 
       console.log("Final update data being sent to API:", updateData);
-      console.log("TicketPrice specifically:", updateData.ticketPrice, typeof updateData.ticketPrice);
+      console.log(
+        "TicketPrice specifically:",
+        updateData.ticketPrice,
+        typeof updateData.ticketPrice
+      );
 
       const updatedEvent = await eventsAPI.updateEvent(id, updateData);
       console.log("Update API response:", updatedEvent);
-      
+
       // Force refresh both event lists
       await Promise.all([fetchEvents(), fetchOrganizerEvents()]);
-      
+
       addNotification({
         type: "success",
         title: "Success",
@@ -232,7 +263,9 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
       addNotification({
         type: "error",
         title: "Error",
-        message: `Failed to update event: ${(error as any).response?.data?.message || "Please try again."}`,
+        message: `Failed to update event: ${
+          (error as any).response?.data?.message || "Please try again."
+        }`,
       });
     }
   };
@@ -252,7 +285,9 @@ export const EventProvider: React.FC<{ children: React.ReactNode }> = ({
       addNotification({
         type: "error",
         title: "Error",
-        message: `Failed to delete event: ${(error as any).response?.data?.message || "Please try again."}`,
+        message: `Failed to delete event: ${
+          (error as any).response?.data?.message || "Please try again."
+        }`,
       });
     }
   };

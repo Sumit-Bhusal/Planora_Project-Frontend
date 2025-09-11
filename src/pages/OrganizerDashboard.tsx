@@ -60,15 +60,17 @@ const OrganizerDashboard: React.FC<{
       icon: BarChart3,
       label: "Revenue",
       value: `NPR ${organizerEvents
-        .reduce(
-          (sum, event) => {
-            const attendees = Number(event.currentAttendees) || 0;
-            const price = Number(event.ticketPrice || event.price) || 0;
-            console.log('Revenue calculation:', { eventTitle: event.title, attendees, price, eventData: event });
-            return sum + (attendees * price);
-          },
-          0
-        )
+        .reduce((sum, event) => {
+          const attendees = Number(event.currentAttendees) || 0;
+          const price = Number(event.ticketPrice || event.price) || 0;
+          console.log("Revenue calculation:", {
+            eventTitle: event.title,
+            attendees,
+            price,
+            eventData: event,
+          });
+          return sum + attendees * price;
+        }, 0)
         .toLocaleString()}`,
       color: "text-green-600 dark:text-green-400",
       bgColor: "bg-green-50 dark:bg-green-900/30",
@@ -235,7 +237,9 @@ const OrganizerDashboard: React.FC<{
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {organizerEvents.slice(0, 4).map((event) => (
                 <EventCard
-                  key={`${event.id}-${event.updatedAt}-${event.ticketPrice}-${Date.now()}`}
+                  key={`${event.id}-${event.updatedAt}-${
+                    event.ticketPrice
+                  }-${Date.now()}`}
                   event={event}
                   variant="organizer"
                   onEdit={() => handleEventEdit(event)}

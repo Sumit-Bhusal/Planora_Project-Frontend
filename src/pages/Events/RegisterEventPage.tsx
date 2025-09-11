@@ -8,7 +8,10 @@ import { makePayment } from "../../actions/payment/payment";
 import { PaymentData } from "../../types/payment";
 import { useAuth } from "../../contexts/AuthContext";
 import EsewaPayment from "../../components/Payment/EsewaPayment";
-import { participationAPI, type RegistrationCheck } from "../../services/api/participation";
+import {
+  participationAPI,
+  type RegistrationCheck,
+} from "../../services/api/participation";
 import { useNotification } from "../../contexts/NotificationContext";
 
 const RegisterEventPage: React.FC = () => {
@@ -18,11 +21,12 @@ const RegisterEventPage: React.FC = () => {
   const [showPaymentModal, setShowPaymentModal] = React.useState(false);
   const { paymentData, setPaymentData } = useAuth();
   const { addNotification } = useNotification();
-  const [registrationStatus, setRegistrationStatus] = React.useState<RegistrationCheck>({
-    isRegistered: false,
-    status: null,
-    registrationDate: null,
-  });
+  const [registrationStatus, setRegistrationStatus] =
+    React.useState<RegistrationCheck>({
+      isRegistered: false,
+      status: null,
+      registrationDate: null,
+    });
 
   // Always get user info from localStorage
   let user = null;
@@ -93,7 +97,10 @@ const RegisterEventPage: React.FC = () => {
 
   const handleProceedToPayment = async () => {
     // Block if already paid/confirmed
-    if (registrationStatus.isRegistered && registrationStatus.status === "confirmed") {
+    if (
+      registrationStatus.isRegistered &&
+      registrationStatus.status === "confirmed"
+    ) {
       addNotification({
         type: "info",
         title: "Already registered",
@@ -136,11 +143,12 @@ const RegisterEventPage: React.FC = () => {
     >
       <div className="absolute inset-0 bg-black/70 backdrop-blur-md z-0" />
       <div className="relative z-10 w-full max-w-3xl mx-auto py-16 px-4 flex flex-col gap-8">
-        {registrationStatus.isRegistered && registrationStatus.status === "confirmed" && (
-          <div className="w-full bg-green-50/90 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-4 py-3 rounded-lg">
-            You are already registered for this event. Enjoy!
-          </div>
-        )}
+        {registrationStatus.isRegistered &&
+          registrationStatus.status === "confirmed" && (
+            <div className="w-full bg-green-50/90 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-4 py-3 rounded-lg">
+              You are already registered for this event. Enjoy!
+            </div>
+          )}
         <div className="flex flex-col items-center mb-4">
           <Sparkles className="h-8 w-8 text-primary-400 animate-pulse mb-2" />
           <h2 className="text-4xl font-extrabold text-center text-white mb-2 tracking-tight drop-shadow-lg">
@@ -199,10 +207,14 @@ const RegisterEventPage: React.FC = () => {
         <Button
           className="w-full py-4 text-xl font-bold bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white rounded-xl shadow-lg transform hover:scale-105 transition-all mt-4"
           onClick={() => handleProceedToPayment()}
-          disabled={registrationStatus.isRegistered && registrationStatus.status === "confirmed"}
+          disabled={
+            registrationStatus.isRegistered &&
+            registrationStatus.status === "confirmed"
+          }
           icon={CreditCard}
         >
-          {registrationStatus.isRegistered && registrationStatus.status === "confirmed"
+          {registrationStatus.isRegistered &&
+          registrationStatus.status === "confirmed"
             ? "Already Registered"
             : "Proceed to Payment"}
         </Button>

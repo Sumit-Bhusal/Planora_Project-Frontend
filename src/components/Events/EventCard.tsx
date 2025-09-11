@@ -47,7 +47,11 @@ const EventCard: React.FC<EventCardProps> = ({
   const cardVariant = variant || "user";
 
   // Debug price
-  console.log(`EventCard for ${event.title} - ticketPrice:`, event.ticketPrice, typeof event.ticketPrice);
+  console.log(
+    `EventCard for ${event.title} - ticketPrice:`,
+    event.ticketPrice,
+    typeof event.ticketPrice
+  );
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -81,24 +85,24 @@ const EventCard: React.FC<EventCardProps> = ({
           signedFields: "",
           transactionUUID: "",
         });
-        
+
         addNotification({
-          type: 'success',
-          title: 'Registration Started',
-          message: 'Proceeding to payment...'
+          type: "success",
+          title: "Registration Started",
+          message: "Proceeding to payment...",
         });
-        
+
         navigate("/events/register", { state: { event } });
       } else {
         navigate("/events");
       }
     } catch (error: any) {
-      console.error('Registration error:', error);
-      
+      console.error("Registration error:", error);
+
       addNotification({
-        type: 'error',
-        title: 'Registration Failed',
-        message: error.message || 'Failed to register for event'
+        type: "error",
+        title: "Registration Failed",
+        message: error.message || "Failed to register for event",
       });
     }
   };

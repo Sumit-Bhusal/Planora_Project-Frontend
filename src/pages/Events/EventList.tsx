@@ -177,7 +177,7 @@ const EventList: React.FC = () => {
                       // Track only a view here; don’t auto-register
                       trackView(event.id);
                       // Navigate to the details/registration preview with state
-                      navigate('/events/register', { state: { event } });
+                      navigate("/events/register", { state: { event } });
                     }}
                   >
                     View Details
@@ -346,20 +346,21 @@ const EventList: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAndSortedEvents.map((event) => {
               // Determine variant and actions based on user role and ownership
-              const isEventOwner = user?.role === "organizer" && event.organizer?.id === user.id;
+              const isEventOwner =
+                user?.role === "organizer" && event.organizer?.id === user.id;
               const isOrganizer = user?.role === "organizer";
-              
+
               // Organizers can only manage their own events, no registration
               // Users can register for any event
               let variant: "user" | "organizer" = "user";
               let showActions = !!user;
-              
+
               if (isEventOwner) {
                 variant = "organizer"; // Show edit/delete for owned events
               } else if (isOrganizer) {
                 showActions = false; // Organizers can't register for other events, show read-only
               }
-              
+
               return (
                 <div key={event.id} className="relative">
                   <div id={`event-${event.id}`}>
